@@ -2,10 +2,7 @@
 
 An app to copy files (and your prompt of choice) into the clipboard for instant LLM context.
 
-**Engineers 🚀** – ship code faster with a tool that treats *time* as a first-class constraint.
-
-> “Re-indexed (cold startup) the entire TensorFlow monorepo (≈3 GB, 11 k files) in **6.7 seconds** on a humble i3‑10105F.
-> No coffee breaks required.” — *PasteRust benchmark log*
+> “Re-indexed (cold startup) the entire TensorFlow monorepo (≈1.6 GB) in **6.7 seconds** on a humble i3‑10105F. No coffee breaks required.” — *PasteRust benchmark log*
 
 ---
 
@@ -90,7 +87,7 @@ npm run tauri build  # creates native installers for your OS
 
 ---
 
-## 🪪 License
+## 🤠 License
 
 [MIT](LICENSE) – because good tools should travel far.
 
