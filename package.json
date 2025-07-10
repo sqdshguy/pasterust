@@ -1,7 +1,16 @@
 {
   "name": "pasterust",
-  "private": true,
   "version": "0.1.0",
+  "description": "Blazing fast source code context generator for LLMs",
+  "author": "Oleksandr Herasymov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sqdshguy/pasterust.git"
+  },
+  "homepage": "https://github.com/sqdshguy/pasterust#readme",
+  "keywords": ["llm", "context", "rust", "tauri"],
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",

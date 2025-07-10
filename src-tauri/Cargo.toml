@@ -5,6 +5,10 @@ description = "Source Code Context Generator"
 authors = ["sqdshguy"]
 edition = "2024"
 
+[features]
+default = ["parallel"]
+parallel = []
+
 [profile.release]
 panic = "abort"
 codegen-units = 1

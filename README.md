@@ -22,7 +22,7 @@ I used [**kleneway/pastemax**](https://github.com/kleneway/pastemax) for months,
 | **Checkbox Precision**                                          | Include whole trees or single needles               |
 | **Custom Prompts**                                              | Jam context instructions straight into the payload  |
 | **Pristine XML Output**                                         | Drop‑in ready for RAG, embeddings, agents           |
-| **Dark‑mode Native UI**                                         | Built with React/Tauri – 30 MB on disk, <150 MB RAM |
+| **Dark‑mode Native UI**                                         | Built with React/Tauri - 30 MB on disk, <150 MB RAM |
 
 ---
 

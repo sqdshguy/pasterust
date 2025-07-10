@@ -29,7 +29,7 @@ function ContextUsagePanel({
 
       setIsCountingTokens(true);
       try {
-        const tokenCount = await invoke<number>('count_prompt_tokens', { prompt });
+        const tokenCount = await invoke<number>('count_prompt_tokens_command', { prompt });
         setPromptTokens(tokenCount);
       } catch (error) {
         console.error('Failed to count prompt tokens:', error);
