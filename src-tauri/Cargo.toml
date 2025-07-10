@@ -3,7 +3,7 @@ name = "pasterust"
 version = "0.1.0"
 description = "Source Code Context Generator"
 authors = ["sqdshguy"]
-edition = "2024"
+edition = "2025"
 
 [features]
 default = ["parallel"]
