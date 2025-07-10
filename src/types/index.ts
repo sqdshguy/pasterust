@@ -82,6 +82,7 @@ export interface FileTreeHookResult {
   scanTime: number | null;
   selectFolder: () => Promise<void>;
   refreshDirectory: () => Promise<void>;
+  setFileTree: (fileTree: FileNode[]) => void;
   setMessage: (message: string) => void;
 }
 
