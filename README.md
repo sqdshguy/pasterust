@@ -1,48 +1,48 @@
-# ⚡️🦀 PasteRust – Warp-Speed Context for Your LLM
+# ⚡️🦀 PasteRust – Fast Context for Your LLM
 
-An app to copy files (and your prompt of choice) into the clipboard for instant LLM context.
+PasteRust is a small desktop app that copies files (and an optional prompt) into your clipboard so you can drop them straight into an LLM.
 
-> “Re-indexed (cold startup) the entire TensorFlow monorepo (≈1.6 GB) in **6.7 seconds** on a humble i3‑10105F. No coffee breaks required.” — *PasteRust benchmark log*
-
----
-
-## Why PasteRust Exists
-
-I used [**kleneway/pastemax**](https://github.com/kleneway/pastemax) for months, but eventually got tired of Electron's sluggishness and waiting two minutes for the codebase to load. So I rebuilt the core in Rust + Tauri, cut out the bloat, and achieved native-level speed.
+> Benchmarked: re‑indexed the entire TensorFlow monorepo (\~1.6 GB) in **6.7 seconds** on an entry‑level i3‑10105F.
 
 ---
 
-## 🔥 Headline Features
+## Why I built this
 
-| 🚀 What you get                                                 | 💎 Why it matters                                   |
-| --------------------------------------------------------------- | --------------------------------------------------- |
-| **Blazing Startup** – single‑digit seconds, even for mega‑repos | Less waiting, more doing                            |
-| **Folder‑First Workflow** – point to any directory              | Zero ceremony onboarding                            |
-| **Smart File Detection**                                        | Auto‑filters *all* common code & config formats     |
-| **Checkbox Precision**                                          | Include whole trees or single needles               |
-| **Custom Prompts**                                              | Jam context instructions straight into the payload  |
-| **Pristine XML Output**                                         | Drop‑in ready for RAG, embeddings, agents           |
-| **Dark‑mode Native UI**                                         | Built with React/Tauri - 30 MB on disk, <150 MB RAM |
+I used [**kleneway/pastemax**](https://github.com/kleneway/pastemax) for months, but Electron felt too heavy. It took two minutes just to load a codebase. So I rewrote it in Rust + Tauri. The result: a fraction of the size, native speed, and no waiting around.
 
 ---
 
-## 📦 Supported File Types (abridged)
+## 🔥 Features
 
-* **Languages**: Rust, Python, JS/TS, C/C++, C#, Java, Go, Swift, Kotlin, …
+| What you get                            | Why it matters                                 |
+| --------------------------------------- | ---------------------------------------------- |
+| **Fast startup** – seconds, not minutes | Spend time coding, not waiting                 |
+| **Folder-first workflow**               | Point it at a repo, and it just works          |
+| **Smart file detection**                | Picks up code, configs, and docs automatically |
+| **Checkbox selection**                  | Include everything or just the files you need  |
+| **Custom prompts**                      | Add context instructions directly              |
+| **Clean XML output**                    | Ready to feed into RAG, embeddings, or agents  |
+| **Native dark UI**                      | Built with Tauri/React – ~30 MB install size  |
+
+---
+
+## 📦 Supported File Types
+
+* **Languages**: Rust, Python, JS/TS, C/C++, C#, Java, Go, Swift, Kotlin, ...
 * **Web**: HTML, CSS, SCSS, Vue, Svelte, JSX/TSX
 * **Config & Docs**: JSON, YAML, TOML, Dockerfile, Makefile, Markdown, LaTeX
 
-*(If your linter understands it, PasteRust probably does too.)*
+*(If your editor supports it, chances are PasteRust does too.)*
 
 ---
 
-## 🛠️ From Click to Clipboard
+## 🛠️ Workflow
 
-1. **Select Folder** →
-2. **Glance at Detected Files** →
-3. **Tick the ones you need** →
-4. *(Optional)* **Add an LLM prompt** →
-5. **Copy XML** – you’re done.
+1. Select a folder
+2. Review the detected files
+3. Check the ones you want
+4. (Optional) Add a custom prompt
+5. Copy XML — done
 
 ```xml
 <source_code_context>
@@ -57,43 +57,44 @@ I used [**kleneway/pastemax**](https://github.com/kleneway/pastemax) for months,
 
 ---
 
-## ✨ Tech Stack Faithful to Performance
+## ✨ Tech Stack
 
-| Layer           | Choice                    | Rationale                                 |
-| --------------- | ------------------------- | ----------------------------------------- |
-| **Frontend**    | React + TypeScript + Vite | Hot‑reload that actually feels hot        |
-| **Runtime**     | **Rust**                  | Safety at the speed of C                  |
-| **Host**        | **Tauri**                 | Native WebView, 10× lighter than Electron |
-| **FS Crawling** | `walkdir` crate           | Thread‑pooled I/O traversal               |
-| **Clipboard**   | Tauri plugin              | Cross‑platform sanity                     |
+| Layer         | Choice                    | Why                                       |
+| ------------- | ------------------------- | ----------------------------------------- |
+| **Frontend**  | React + TypeScript + Vite | Fast dev cycle, hot reload                |
+| **Runtime**   | Rust                      | Memory safety + C‑like speed              |
+| **Host**      | Tauri                     | Native WebView, way lighter than Electron |
+| **FS crawl**  | `walkdir` crate           | Efficient, parallel file traversal        |
+| **Clipboard** | Tauri plugin              | Works across platforms                    |
 
 ---
 
 ## Quickstart
 
 ```bash
-# Prerequisites: Node 16+, Rust stable, Tauri CLI
+# Requirements: Node 16+, Rust stable, Tauri CLI
 git clone https://github.com/sqdshguy/pasterust
 cd pasterust
-npm install          # 🍿 grab deps
-npm run tauri dev    # ⚡ start hacking
+npm install
+npm run tauri dev
 ```
 
 ### Production Build
 
 ```bash
-npm run tauri build  # creates native installers for your OS
+npm run tauri build  # Creates native installers for your OS
 ```
 
 ---
 
-## 🤠 License
-
-[MIT](LICENSE) – because good tools should travel far.
-
 ## 🤝 Contributing
 
-Pull requests are welcome! If you have ideas for features that would help software engineers, I'd love to hear them and see them added. For any proposed optimizations, please include benchmarks to demonstrate their impact.
+Pull requests welcome. If you’re adding optimizations, please include benchmarks so the impact is clear. Feature ideas that make life easier for engineers are especially encouraged.
 
+## 📄 License
 
-*PasteRust: less bloat, more velocity.*
+MIT License
+
+---
+
+*PasteRust: less bloat, more speed.*
