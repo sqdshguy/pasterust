@@ -1,17 +1,18 @@
-import { useState, useCallback } from 'react';
-import type { FileNode, SelectedFileInfo, FileSelectionHookResult, DirectoryCheckboxState } from '../types';
-import { 
-  getNodeByPath, 
-  getSourceFilesInDirectory, 
-  getAllSourceFiles
-} from '../utils/fileUtils';
+import { useCallback, useState } from "react";
+import type {
+  DirectoryCheckboxState,
+  FileNode,
+  FileSelectionHookResult,
+  SelectedFileInfo,
+} from "../types";
+import { getAllSourceFiles, getNodeByPath, getSourceFilesInDirectory } from "../utils/fileUtils";
 
 export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult => {
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
 
   const toggleFileSelection = useCallback((filePath: string) => {
-    setSelectedFiles(prev => {
+    setSelectedFiles((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(filePath)) {
         newSet.delete(filePath);
@@ -23,7 +24,7 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
   }, []);
 
   const toggleDirectoryExpansion = useCallback((dirPath: string) => {
-    setExpandedDirs(prev => {
+    setExpandedDirs((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(dirPath)) {
         newSet.delete(dirPath);
@@ -34,39 +35,49 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
     });
   }, []);
 
-  const getDirectoryCheckboxState = useCallback((dirPath: string): DirectoryCheckboxState => {
-    const dirNode = getNodeByPath(fileTree, dirPath);
-    if (!dirNode || !dirNode.is_directory) return 'unchecked';
+  const getDirectoryCheckboxState = useCallback(
+    (dirPath: string): DirectoryCheckboxState => {
+      const dirNode = getNodeByPath(fileTree, dirPath);
+      if (!dirNode || !dirNode.is_directory) return "unchecked";
 
-    const sourceFilesInDir = getSourceFilesInDirectory(dirNode);
-    if (sourceFilesInDir.length === 0) return 'unchecked';
+      const sourceFilesInDir = getSourceFilesInDirectory(dirNode);
+      if (sourceFilesInDir.length === 0) return "unchecked";
 
-    const selectedFilesInDir = sourceFilesInDir.filter(filePath => selectedFiles.has(filePath));
+      const selectedFilesInDir = sourceFilesInDir.filter((filePath) => selectedFiles.has(filePath));
 
-    if (selectedFilesInDir.length === 0) return 'unchecked';
-    if (selectedFilesInDir.length === sourceFilesInDir.length) return 'checked';
-    return 'indeterminate';
-  }, [fileTree, selectedFiles]);
+      if (selectedFilesInDir.length === 0) return "unchecked";
+      if (selectedFilesInDir.length === sourceFilesInDir.length) return "checked";
+      return "indeterminate";
+    },
+    [fileTree, selectedFiles],
+  );
 
-  const toggleDirectorySelection = useCallback((dirPath: string) => {
-    const dirNode = getNodeByPath(fileTree, dirPath);
-    if (!dirNode || !dirNode.is_directory) return;
+  const toggleDirectorySelection = useCallback(
+    (dirPath: string) => {
+      const dirNode = getNodeByPath(fileTree, dirPath);
+      if (!dirNode || !dirNode.is_directory) return;
 
-    const sourceFilesInDir = getSourceFilesInDirectory(dirNode);
-    const currentState = getDirectoryCheckboxState(dirPath);
+      const sourceFilesInDir = getSourceFilesInDirectory(dirNode);
+      const currentState = getDirectoryCheckboxState(dirPath);
 
-    setSelectedFiles(prev => {
-      const newSet = new Set(prev);
+      setSelectedFiles((prev) => {
+        const newSet = new Set(prev);
 
-      if (currentState === 'checked') {
-        sourceFilesInDir.forEach(filePath => newSet.delete(filePath));
-      } else {
-        sourceFilesInDir.forEach(filePath => newSet.add(filePath));
-      }
+        if (currentState === "checked") {
+          sourceFilesInDir.forEach((filePath) => {
+            newSet.delete(filePath);
+          });
+        } else {
+          sourceFilesInDir.forEach((filePath) => {
+            newSet.add(filePath);
+          });
+        }
 
-      return newSet;
-    });
-  }, [fileTree, getDirectoryCheckboxState]);
+        return newSet;
+      });
+    },
+    [fileTree, getDirectoryCheckboxState],
+  );
 
   const selectAllFiles = useCallback(() => {
     const allSourceFiles = getAllSourceFiles(fileTree);
@@ -99,14 +110,14 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
 
   const getSelectedFilesInfo = useCallback((): SelectedFileInfo[] => {
     return Array.from(selectedFiles)
-      .map(filePath => {
+      .map((filePath) => {
         const node = getNodeByPath(fileTree, filePath);
         if (!node) return null;
 
         return {
           path: filePath,
           name: node.name,
-          tokenCount: node.token_count
+          tokenCount: node.token_count,
         } as SelectedFileInfo;
       })
       .filter((file): file is SelectedFileInfo => file !== null)
@@ -130,6 +141,6 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
     expandAllDirectories,
     collapseAllDirectories,
     getSelectedFilesInfo,
-    resetSelection
+    resetSelection,
   };
 };

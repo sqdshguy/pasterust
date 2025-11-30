@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import type { SelectedFileInfo } from '../types';
-import FileIcon from './FileIcon';
+import { useState } from "react";
+import type { SelectedFileInfo } from "../types";
+import FileIcon from "./FileIcon";
 
 interface SelectedFilesListProps {
   selectedFilesInfo: SelectedFileInfo[];
@@ -11,12 +11,12 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
   const [removingFiles, setRemovingFiles] = useState<Set<string>>(new Set());
 
   const handleRemoveFile = (filePath: string) => {
-    setRemovingFiles(prev => new Set(prev).add(filePath));
-    
+    setRemovingFiles((prev) => new Set(prev).add(filePath));
+
     // Wait for animation to complete before actually removing
     setTimeout(() => {
       onRemoveFile(filePath);
-      setRemovingFiles(prev => {
+      setRemovingFiles((prev) => {
         const newSet = new Set(prev);
         newSet.delete(filePath);
         return newSet;
@@ -34,12 +34,12 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
         {selectedFilesInfo.map((file, index) => {
           const isRemoving = removingFiles.has(file.path);
           const staggerDelay = `${index * 0.05}s`;
-          
+
           return (
-            <div 
-              key={file.path} 
-              className={`selected-file-item ${isRemoving ? 'removing' : ''} staggered`}
-              style={{ '--stagger-delay': staggerDelay } as React.CSSProperties}
+            <div
+              key={file.path}
+              className={`selected-file-item ${isRemoving ? "removing" : ""} staggered`}
+              style={{ "--stagger-delay": staggerDelay } as React.CSSProperties}
             >
               <div className="selected-file-info">
                 <span className="selected-file-icon">
@@ -47,7 +47,8 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
                 </span>
                 <span className="selected-file-name">{file.name}</span>
               </div>
-              <button 
+              <button
+                type="button"
                 className="remove-file-btn"
                 onClick={() => handleRemoveFile(file.path)}
                 title={`Remove ${file.name}`}
@@ -63,4 +64,4 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
   );
 }
 
-export default SelectedFilesList; 
+export default SelectedFilesList;

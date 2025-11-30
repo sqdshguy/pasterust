@@ -1,4 +1,4 @@
-import type { FileNode } from '../types';
+import type { FileNode } from "../types";
 
 export const countSourceFiles = (nodes: FileNode[]): number => {
   let count = 0;
@@ -47,27 +47,46 @@ export const getNodeByPath = (nodes: FileNode[], targetPath: string): FileNode |
 };
 
 export const getFileIcon = (fileName: string): string => {
-  const ext = fileName.split('.').pop()?.toLowerCase() || '';
+  const ext = fileName.split(".").pop()?.toLowerCase() || "";
   const iconMap: { [key: string]: string } = {
-    'js': '🟨', 'ts': '🔷', 'jsx': '⚛️', 'tsx': '⚛️',
-    'py': '🐍', 'rs': '🦀', 'java': '☕', 'cpp': '⚙️', 'c': '⚙️',
-    'html': '🌐', 'css': '🎨', 'scss': '🎨', 'sass': '🎨',
-    'json': '📋', 'xml': '📄', 'yaml': '📝', 'yml': '📝',
-    'md': '📖', 'txt': '📄', 'go': '🐹', 'php': '🐘',
-    'rb': '💎', 'swift': '🦉', 'kt': '🎯', 'dart': '🎯'
+    js: "🟨",
+    ts: "🔷",
+    jsx: "⚛️",
+    tsx: "⚛️",
+    py: "🐍",
+    rs: "🦀",
+    java: "☕",
+    cpp: "⚙️",
+    c: "⚙️",
+    html: "🌐",
+    css: "🎨",
+    scss: "🎨",
+    sass: "🎨",
+    json: "📋",
+    xml: "📄",
+    yaml: "📝",
+    yml: "📝",
+    md: "📖",
+    txt: "📄",
+    go: "🐹",
+    php: "🐘",
+    rb: "💎",
+    swift: "🦉",
+    kt: "🎯",
+    dart: "🎯",
   };
-  return iconMap[ext] || '📄';
+  return iconMap[ext] || "📄";
 };
 
 export const generateFileTreeStructure = (nodes: FileNode[], prefix: string = ""): string => {
   let result = "";
-  
+
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     const isLast = i === nodes.length - 1;
     const currentPrefix = prefix + (isLast ? "└── " : "├── ");
     const nextPrefix = prefix + (isLast ? "    " : "│   ");
-    
+
     if (node.is_directory) {
       result += `${currentPrefix}📁 ${node.name}/\n`;
       if (node.children && node.children.length > 0) {
@@ -75,17 +94,24 @@ export const generateFileTreeStructure = (nodes: FileNode[], prefix: string = ""
       }
     } else {
       const icon = getFileIcon(node.name);
-      const tokenInfo = node.is_source_file && node.token_count 
-        ? ` (${node.token_count.toLocaleString()} tokens)` 
-        : node.is_source_file ? "" : " (non-source)";
+      const tokenInfo =
+        node.is_source_file && node.token_count
+          ? ` (${node.token_count.toLocaleString()} tokens)`
+          : node.is_source_file
+            ? ""
+            : " (non-source)";
       result += `${currentPrefix}${icon} ${node.name}${tokenInfo}\n`;
     }
   }
-  
+
   return result;
 };
 
-const buildFileMapTree = (nodes: FileNode[], prefix: string, selectedFiles: Set<string>): string => {
+const buildFileMapTree = (
+  nodes: FileNode[],
+  prefix: string,
+  selectedFiles: Set<string>,
+): string => {
   let result = "";
 
   for (let i = 0; i < nodes.length; i++) {
@@ -110,7 +136,7 @@ const buildFileMapTree = (nodes: FileNode[], prefix: string, selectedFiles: Set<
 export const generateFileMap = (
   rootPath: string,
   nodes: FileNode[],
-  selectedFiles: Set<string>
+  selectedFiles: Set<string>,
 ): string => {
   const header = rootPath || "/";
   const tree = buildFileMapTree(nodes, "", selectedFiles).trimEnd();

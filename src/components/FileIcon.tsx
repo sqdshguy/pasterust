@@ -1,11 +1,6 @@
 function FileIcon() {
   return (
-    <svg
-      className="file-svg"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg className="file-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path
         d="M8.25 4.75h5.5L17.5 8.5v10.25a1.5 1.5 0 0 1-1.5 1.5h-7.75a1.5 1.5 0 0 1-1.5-1.5V6.25a1.5 1.5 0 0 1 1.5-1.5Z"
         fill="var(--primary-color)"

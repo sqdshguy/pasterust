@@ -1,6 +1,6 @@
+import type { FileNode } from "../types";
 import FileControls from "./FileControls";
 import TreeNode from "./TreeNode";
-import type { FileNode } from "../types";
 
 interface FileTreePanelProps {
   fileTree: FileNode[];
@@ -9,9 +9,7 @@ interface FileTreePanelProps {
   onToggleFile: (filePath: string) => void;
   onToggleDirectory: (dirPath: string) => void;
   onToggleDirectorySelection: (dirPath: string) => void;
-  getDirectoryCheckboxState: (
-    dirPath: string,
-  ) => "checked" | "unchecked" | "indeterminate";
+  getDirectoryCheckboxState: (dirPath: string) => "checked" | "unchecked" | "indeterminate";
   onSelectAllFiles: () => void;
   onDeselectAllFiles: () => void;
   onExpandAllDirectories: () => void;

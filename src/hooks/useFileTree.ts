@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import type { FileNode, FileTreeHookResult } from '../types';
+import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useState } from "react";
+import type { FileNode, FileTreeHookResult } from "../types";
 
 export const useFileTree = (): FileTreeHookResult => {
   const [selectedFolder, setSelectedFolder] = useState<string>("");
@@ -71,6 +71,6 @@ export const useFileTree = (): FileTreeHookResult => {
     selectFolder,
     refreshDirectory,
     setFileTree,
-    setMessage
+    setMessage,
   };
 };

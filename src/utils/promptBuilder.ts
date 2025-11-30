@@ -16,7 +16,7 @@ export const buildPromptPayload = ({
   selectedFiles,
   includeFileStructure,
   prompt,
-  filesWithContent
+  filesWithContent,
 }: PromptPayloadOptions): string => {
   const sortedFiles = filesWithContent
     .filter((file) => selectedFiles.has(file.path))

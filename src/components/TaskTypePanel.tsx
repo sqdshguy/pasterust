@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import type { TaskType } from "../types";
 import { TASK_TYPES } from "../data/taskTypes";
+import type { TaskType } from "../types";
 
 interface TaskTypePanelProps {
   selectedTaskType: string | null;
   onTaskTypeSelect: (taskType: TaskType | null) => void;
 }
 
-function TaskTypePanel({
-  selectedTaskType,
-  onTaskTypeSelect,
-}: TaskTypePanelProps) {
+function TaskTypePanel({ selectedTaskType, onTaskTypeSelect }: TaskTypePanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const selectedMode =
@@ -56,9 +53,7 @@ function TaskTypePanel({
               <span className="task-type-badge">Default</span>
             ) : null}
           </div>
-          <div className="task-type-current-description">
-            {selectedMode?.description}
-          </div>
+          <div className="task-type-current-description">{selectedMode?.description}</div>
         </div>
         <button
           type="button"
@@ -84,18 +79,14 @@ function TaskTypePanel({
                   type="button"
                   className={`task-type-button${isSelected ? " selected" : ""}`}
                   onClick={() => handleSelect(taskType)}
-                  aria-pressed={isSelected}
+                  aria-checked={isSelected}
                   role="menuitemradio"
                 >
                   <div className="task-type-name">
                     {taskType.name}
-                    {isDefault ? (
-                      <span className="task-type-badge">Default</span>
-                    ) : null}
+                    {isDefault ? <span className="task-type-badge">Default</span> : null}
                   </div>
-                  <div className="task-type-description">
-                    {taskType.description}
-                  </div>
+                  <div className="task-type-description">{taskType.description}</div>
                 </button>
               );
             })}

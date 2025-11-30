@@ -1,5 +1,5 @@
-import SelectedFilesList from "./SelectedFilesList";
 import type { SelectedFileInfo } from "../types";
+import SelectedFilesList from "./SelectedFilesList";
 
 interface PromptPanelProps {
   selectedFiles: Set<string>;
@@ -47,10 +47,7 @@ function PromptPanel({
         </div>
       </div>
 
-      <SelectedFilesList
-        selectedFilesInfo={selectedFilesInfo}
-        onRemoveFile={onToggleFile}
-      />
+      <SelectedFilesList selectedFilesInfo={selectedFilesInfo} onRemoveFile={onToggleFile} />
 
       <div className="prompt-section">
         <label htmlFor="prompt-textarea" className="prompt-label">
@@ -86,6 +83,7 @@ function PromptPanel({
         </div>
 
         <button
+          type="button"
           onClick={onCopyToClipboard}
           disabled={isLoading || selectedFiles.size === 0}
           className="copy-button"

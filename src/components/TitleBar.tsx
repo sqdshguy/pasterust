@@ -6,19 +6,8 @@ interface TitleBarProps {
   onRefreshDirectory: () => void;
 }
 
-const FolderIcon = ({
-  open = false,
-  className
-}: {
-  open?: boolean;
-  className?: string;
-}) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-    focusable="false"
-  >
+const FolderIcon = ({ open = false, className }: { open?: boolean; className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path
       d="M3.5 6.75A1.75 1.75 0 0 1 5.25 5h4.27c.46 0 .9.18 1.22.5l1.36 1.36c.33.32.77.5 1.23.5h4.47A1.75 1.75 0 0 1 19.5 9.1l-.6 8.15A1.75 1.75 0 0 1 17.16 19H5.09a1.75 1.75 0 0 1-1.73-1.93z"
       fill="currentColor"
@@ -38,12 +27,7 @@ const FolderIcon = ({
 );
 
 const RefreshIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-    focusable="false"
-  >
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path
       d="M5 4v4h4"
       fill="none"
@@ -78,12 +62,7 @@ const RefreshIcon = ({ className }: { className?: string }) => (
 );
 
 const SpinnerIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-    focusable="false"
-  >
+  <svg className={className} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <circle
       cx="12"
       cy="12"
@@ -108,7 +87,7 @@ function TitleBar({
   scanTime,
   isLoading,
   onSelectFolder,
-  onRefreshDirectory
+  onRefreshDirectory,
 }: TitleBarProps) {
   // Format scan time for display
   const formatScanTime = (timeMs: number): string => {
@@ -126,26 +105,25 @@ function TitleBar({
           <span className="app-icon">🦀</span>
           <h1 className="app-title">PasteRust</h1>
         </div>
-        
+
         <div className="title-center">
           {selectedFolder ? (
             <div className="header-folder-info">
               <FolderIcon className="header-folder-icon" open />
               <span className="folder-path">{selectedFolder}</span>
-              {scanTime && (
-                <span className="scan-time">({formatScanTime(scanTime)})</span>
-              )}
+              {scanTime && <span className="scan-time">({formatScanTime(scanTime)})</span>}
             </div>
           ) : (
             <span className="no-folder-text">No folder selected</span>
           )}
         </div>
-        
+
         <div className="title-right">
           <div className="header-actions">
             {selectedFolder && (
-              <button 
-                onClick={onRefreshDirectory} 
+              <button
+                type="button"
+                onClick={onRefreshDirectory}
                 disabled={isLoading}
                 className="header-refresh-btn"
                 title="Refresh directory scan"
@@ -158,8 +136,9 @@ function TitleBar({
                 )}
               </button>
             )}
-            <button 
-              onClick={onSelectFolder} 
+            <button
+              type="button"
+              onClick={onSelectFolder}
               disabled={isLoading}
               className="header-select-folder-btn"
               title="Select folder"

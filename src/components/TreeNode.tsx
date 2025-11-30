@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import type { FileNode } from '../types';
-import FileIcon from './FileIcon';
+import { useEffect, useState } from "react";
+import type { FileNode } from "../types";
+import FileIcon from "./FileIcon";
 
 interface TreeNodeProps {
   node: FileNode;
@@ -9,35 +9,34 @@ interface TreeNodeProps {
   onToggleFile: (filePath: string) => void;
   onToggleDirectory: (dirPath: string) => void;
   onToggleDirectorySelection: (dirPath: string) => void;
-  getDirectoryCheckboxState: (dirPath: string) => 'checked' | 'unchecked' | 'indeterminate';
+  getDirectoryCheckboxState: (dirPath: string) => "checked" | "unchecked" | "indeterminate";
   depth: number;
   searchTerm?: string;
 }
 
-function TreeNode({ 
-  node, 
-  selectedFiles, 
-  expandedDirs, 
-  onToggleFile, 
-  onToggleDirectory, 
-  onToggleDirectorySelection, 
-  getDirectoryCheckboxState, 
+function TreeNode({
+  node,
+  selectedFiles,
+  expandedDirs,
+  onToggleFile,
+  onToggleDirectory,
+  onToggleDirectorySelection,
+  getDirectoryCheckboxState,
   depth,
-  searchTerm
+  searchTerm,
 }: TreeNodeProps) {
   const isExpanded = expandedDirs.has(node.path);
   const hasChildren = node.children && node.children.length > 0;
   const isSelected = selectedFiles.has(node.path);
-  const directoryState = node.is_directory
-    ? getDirectoryCheckboxState(node.path)
-    : 'unchecked';
-  
+  const directoryState = node.is_directory ? getDirectoryCheckboxState(node.path) : "unchecked";
+
   // Check if this node matches the search term
-  const isSearchMatch = searchTerm && searchTerm.trim() 
-    ? node.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-      node.path.toLowerCase().includes(searchTerm.toLowerCase().trim())
+  const trimmedSearch = searchTerm?.trim().toLowerCase();
+  const isSearchMatch = trimmedSearch
+    ? node.name.toLowerCase().includes(trimmedSearch) ||
+      node.path.toLowerCase().includes(trimmedSearch)
     : false;
-  
+
   // Animation state management
   const [isNewlySelected, setIsNewlySelected] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
@@ -82,36 +81,31 @@ function TreeNode({
 
   // Generate CSS classes for animations
   const getTreeNodeClasses = () => {
-    const classes = ['tree-node'];
-    if (isSelected) classes.push('file-selected');
-    if (isNewlySelected) classes.push('newly-selected');
-    if (isSearchMatch) classes.push('search-match');
-    return classes.join(' ');
+    const classes = ["tree-node"];
+    if (isSelected) classes.push("file-selected");
+    if (isNewlySelected) classes.push("newly-selected");
+    if (isSearchMatch) classes.push("search-match");
+    return classes.join(" ");
   };
 
   const getExpandButtonClasses = () => {
-    const classes = ['expand-button'];
-    if (isExpanded) classes.push('expanded');
-    return classes.join(' ');
+    const classes = ["expand-button"];
+    if (isExpanded) classes.push("expanded");
+    return classes.join(" ");
   };
 
   const getTreeChildrenClasses = () => {
-    const classes = ['tree-children'];
-    if (isExpanding) classes.push('expanding');
-    if (isCollapsing) classes.push('collapsing');
-    return classes.join(' ');
+    const classes = ["tree-children"];
+    if (isExpanding) classes.push("expanding");
+    if (isCollapsing) classes.push("collapsing");
+    return classes.join(" ");
   };
 
   const FolderIcon = ({ open }: { open: boolean }) => (
-    <svg
-      className="folder-svg"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg className="folder-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path
         d="M3.5 6.75A1.75 1.75 0 0 1 5.25 5h4.27c.46 0 .9.18 1.22.5l1.36 1.36c.33.32.77.5 1.23.5h4.47A1.75 1.75 0 0 1 19.5 9.1l-.6 8.15A1.75 1.75 0 0 1 17.16 19H5.09a1.75 1.75 0 0 1-1.73-1.93z"
-        fill={open ? 'var(--primary-color)' : 'currentColor'}
+        fill={open ? "var(--primary-color)" : "currentColor"}
         fillOpacity={open ? 0.14 : 0.12}
         stroke="currentColor"
         strokeWidth="1.4"
@@ -132,11 +126,12 @@ function TreeNode({
       <div className="tree-node-header">
         {node.is_directory ? (
           <div className="directory-item">
-            <button 
+            <button
+              type="button"
               className={getExpandButtonClasses()}
               onClick={() => onToggleDirectory(node.path)}
               disabled={!hasChildren}
-              aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
+              aria-label={isExpanded ? "Collapse folder" : "Expand folder"}
             >
               {hasChildren && (
                 <svg
@@ -160,26 +155,21 @@ function TreeNode({
               <input
                 type="checkbox"
                 className="checkbox-input"
-                checked={directoryState === 'checked'}
+                checked={directoryState === "checked"}
                 ref={(input) => {
                   if (input) {
-                    input.indeterminate = directoryState === 'indeterminate';
+                    input.indeterminate = directoryState === "indeterminate";
                   }
                 }}
                 onChange={() => onToggleDirectorySelection(node.path)}
               />
-              <span
-                className={`checkbox-box ${directoryState}`}
-                aria-hidden="true"
-              />
+              <span className={`checkbox-box ${directoryState}`} aria-hidden="true" />
             </label>
             <span className="file-icon folder-icon">
               <FolderIcon open={isExpanded} />
             </span>
             <span className="file-name">{node.name}</span>
-            <span className="source-count">
-              {countSourceFiles(node)} source files
-            </span>
+            <span className="source-count">{countSourceFiles(node)} source files</span>
           </div>
         ) : (
           <label className="file-checkbox">
@@ -192,24 +182,26 @@ function TreeNode({
                 disabled={!node.is_source_file}
               />
               <span
-                className={`checkbox-box ${selectedFiles.has(node.path) ? 'checked' : 'unchecked'}`}
+                className={`checkbox-box ${selectedFiles.has(node.path) ? "checked" : "unchecked"}`}
                 aria-hidden="true"
               />
             </span>
-            <span className={`file-info ${!node.is_source_file ? 'non-source' : ''}`}>
+            <span className={`file-info ${!node.is_source_file ? "non-source" : ""}`}>
               <span className="file-icon">
                 <FileIcon />
               </span>
               <span className="file-name">{node.name}</span>
-              {!node.is_source_file && <span className="non-source-label">(not a source file)</span>}
+              {!node.is_source_file && (
+                <span className="non-source-label">(not a source file)</span>
+              )}
             </span>
           </label>
         )}
       </div>
-      
+
       {node.is_directory && isExpanded && hasChildren && (
         <div className={getTreeChildrenClasses()}>
-          {node.children!.map((child) => (
+          {node.children?.map((child) => (
             <TreeNode
               key={child.path}
               node={child}
@@ -230,4 +222,4 @@ function TreeNode({
 }
 
 export default TreeNode;
-export type { TreeNodeProps }; 
+export type { TreeNodeProps };

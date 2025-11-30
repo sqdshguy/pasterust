@@ -7,13 +7,13 @@ interface FileControlsProps {
   onSearchChange: (searchTerm: string) => void;
 }
 
-function FileControls({ 
-  onSelectAll, 
-  onDeselectAll, 
-  onExpandAll, 
+function FileControls({
+  onSelectAll,
+  onDeselectAll,
+  onExpandAll,
   onCollapseAll,
   searchTerm,
-  onSearchChange
+  onSearchChange,
 }: FileControlsProps) {
   return (
     <div className="file-controls">
@@ -26,8 +26,9 @@ function FileControls({
           className="search-input"
         />
         {searchTerm && (
-          <button 
-            onClick={() => onSearchChange('')}
+          <button
+            type="button"
+            onClick={() => onSearchChange("")}
             className="clear-search-btn"
             title="Clear search"
           >
@@ -35,21 +36,21 @@ function FileControls({
           </button>
         )}
       </div>
-      
+
       <div className="control-actions">
         <div className="control-group">
-          <button onClick={onSelectAll} className="control-btn">
+          <button type="button" onClick={onSelectAll} className="control-btn">
             Select All
           </button>
-          <button onClick={onDeselectAll} className="control-btn">
+          <button type="button" onClick={onDeselectAll} className="control-btn">
             Clear
           </button>
         </div>
         <div className="control-group">
-          <button onClick={onExpandAll} className="control-btn">
+          <button type="button" onClick={onExpandAll} className="control-btn">
             Expand
           </button>
-          <button onClick={onCollapseAll} className="control-btn">
+          <button type="button" onClick={onCollapseAll} className="control-btn">
             Collapse
           </button>
         </div>
@@ -58,4 +59,4 @@ function FileControls({
   );
 }
 
-export default FileControls; 
+export default FileControls;

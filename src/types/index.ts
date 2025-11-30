@@ -25,7 +25,7 @@ export interface FileReadResult {
   error?: string;
 }
 
-export type TaskCategory = 'mode' | 'analysis' | 'refactor' | 'debug' | 'feature' | 'documentation';
+export type TaskCategory = "mode" | "analysis" | "refactor" | "debug" | "feature" | "documentation";
 
 export interface TaskType {
   id: string;
@@ -59,7 +59,7 @@ export interface SearchResult {
 export interface FileOperationResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface AppSettings {
@@ -76,7 +76,7 @@ export interface ClipboardContent {
   fileStructure?: string;
 }
 
-export type DirectoryCheckboxState = 'checked' | 'unchecked' | 'indeterminate';
+export type DirectoryCheckboxState = "checked" | "unchecked" | "indeterminate";
 
 export interface FileTreeHookResult {
   selectedFolder: string;

@@ -36,8 +36,7 @@ export const TASK_TYPES: TaskType[] = [
   {
     id: "architecture-review",
     name: "Architecture Review",
-    description:
-      "Evaluate structure, boundaries, and interfaces for architectural issues.",
+    description: "Evaluate structure, boundaries, and interfaces for architectural issues.",
     prompt: `You are an architecture reviewer. Inspect the selected files to surface structural issues.
 
 - Flag leaky abstractions, misplaced responsibilities, and tight coupling.
@@ -49,8 +48,7 @@ export const TASK_TYPES: TaskType[] = [
   {
     id: "code-quality-review",
     name: "Code Quality Review",
-    description:
-      "Spot code that violates best practices or hurts readability/maintainability.",
+    description: "Spot code that violates best practices or hurts readability/maintainability.",
     prompt: `You are a code-quality reviewer. Examine the selected files for maintainability risks.
 
 - Highlight violations of established best practices or style.
