@@ -1,13 +1,13 @@
+use ignore::WalkBuilder;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
-use ignore::WalkBuilder;
 
 use crate::config::AppConfig;
 use crate::error::{AppError, AppResult};
-use crate::file_filters::{is_likely_binary, is_source_file, should_skip_directory};
+use crate::file_filters::is_likely_binary;
 use crate::tokenizer::count_tokens_adaptive;
 
 #[cfg(feature = "parallel")]
@@ -66,22 +66,7 @@ impl DirectoryScanner {
         let mut source_file_entries = Vec::new();
 
         let mut builder = WalkBuilder::new(path);
-        builder
-            .max_depth(Some(self.config.max_depth))
-            .hidden(false)
-            .filter_entry(|entry| {
-                if entry.depth() == 0 {
-                    return true;
-                }
-
-                if entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false) {
-                    if let Some(name) = entry.file_name().to_str() {
-                        return !should_skip_directory(name);
-                    }
-                }
-
-                true
-            });
+        builder.max_depth(Some(self.config.max_depth)).hidden(false);
 
         let walker = builder.build();
 
@@ -102,17 +87,15 @@ impl DirectoryScanner {
 
             let is_dir = metadata.is_dir();
 
-            let is_source = if is_dir {
+            let is_binary = if is_dir {
                 false
             } else {
-                is_source_file(entry_path)
+                is_likely_binary(entry_path)
             };
 
-            if is_source
-                && !is_dir
-                && metadata.len() <= self.config.max_file_size
-                && !is_likely_binary(entry_path)
-            {
+            let is_source = !is_dir && !is_binary;
+
+            if is_source && !is_dir && metadata.len() <= self.config.max_file_size {
                 source_file_entries.push((entry_path.to_path_buf(), metadata));
             }
 
