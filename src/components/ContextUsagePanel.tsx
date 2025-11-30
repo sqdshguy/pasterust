@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { LLM_MODELS, LLM_CATEGORIES, getModelById } from "../data/llmModels";
+import { useMemo, useState } from "react";
+import { getModelById, LLM_CATEGORIES, LLM_MODELS } from "../data/llmModels";
 import type { ContextUsage } from "../types";
 
 interface ContextUsagePanelProps {
@@ -15,7 +15,7 @@ function ContextUsagePanel({
   selectedFilesCount,
   onLLMChange,
 }: ContextUsagePanelProps) {
-  const [selectedLLM, setSelectedLLM] = useState<string>("gpt-4");
+  const [selectedLLM, setSelectedLLM] = useState<string>("chatgpt-plus-business-non-reasoning");
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   const contextUsage = useMemo((): ContextUsage => {
@@ -54,18 +54,16 @@ function ContextUsagePanel({
   return (
     <div className="context-usage-panel">
       <div className="panel-header">
-        <h3
-          onClick={() => setIsExpanded(!isExpanded)}
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((prev) => !prev)}
           className="expandable-header"
         >
-          Context Usage
-          <span className={`expand-icon ${isExpanded ? "expanded" : ""}`}>
-            ▼
-          </span>
-        </h3>
-        <div
-          className={`usage-badge ${getUsageColorClass(contextUsage.usagePercentage)}`}
-        >
+          <span className="panel-title">Context Usage</span>
+          <span className={`expand-icon ${isExpanded ? "expanded" : ""}`}>▼</span>
+        </button>
+        <div className={`usage-badge ${getUsageColorClass(contextUsage.usagePercentage)}`}>
           {contextUsage.totalTokens.toLocaleString()}/
           {(contextUsage.contextLimit / 1000).toFixed(0)}k (
           {contextUsage.usagePercentage.toFixed(1)}%)
@@ -94,31 +92,25 @@ function ContextUsagePanel({
                   <optgroup key={categoryKey} label={category.name}>
                     {modelsInCategory.map((model) => (
                       <option key={model.id} value={model.id}>
-                        {model.icon} {model.name} (
-                        {(model.contextLimit / 1000).toFixed(0)}k tokens)
+                        {model.name} ({(model.contextLimit / 1000).toFixed(0)}k tokens)
                       </option>
                     ))}
                   </optgroup>
                 );
               })}
             </select>
+            <div className="context-note">Context limits shown without an added system prompt.</div>
           </div>
 
           <div className="usage-breakdown">
             <div className="usage-summary">
               <div className="usage-numbers">
-                <span className="current-usage">
-                  {contextUsage.totalTokens.toLocaleString()}
-                </span>
+                <span className="current-usage">{contextUsage.totalTokens.toLocaleString()}</span>
                 <span className="usage-separator">/</span>
-                <span className="context-limit">
-                  {contextUsage.contextLimit.toLocaleString()}
-                </span>
+                <span className="context-limit">{contextUsage.contextLimit.toLocaleString()}</span>
                 <span className="usage-unit">tokens</span>
               </div>
-              <div className="usage-percentage">
-                ({contextUsage.usagePercentage.toFixed(1)}%)
-              </div>
+              <div className="usage-percentage">({contextUsage.usagePercentage.toFixed(1)}%)</div>
             </div>
 
             <div className="progress-bar-container">
@@ -127,9 +119,7 @@ function ContextUsagePanel({
                   className="progress-fill"
                   style={{
                     width: `${Math.min(contextUsage.usagePercentage, 100)}%`,
-                    backgroundColor: getUsageColor(
-                      contextUsage.usagePercentage,
-                    ),
+                    backgroundColor: getUsageColor(contextUsage.usagePercentage),
                   }}
                 />
               </div>
@@ -137,7 +127,6 @@ function ContextUsagePanel({
 
             <div className="token-breakdown">
               <div className="breakdown-item">
-                <span className="breakdown-icon">🧾</span>
                 <span className="breakdown-label">Prompt payload:</span>
                 <span className="breakdown-value">
                   {isCountingTokens ? (
@@ -148,7 +137,6 @@ function ContextUsagePanel({
                 </span>
               </div>
               <div className="breakdown-item">
-                <span className="breakdown-icon">📁</span>
                 <span className="breakdown-label">Files included:</span>
                 <span className="breakdown-value">{selectedFilesCount}</span>
               </div>
@@ -156,8 +144,7 @@ function ContextUsagePanel({
 
             {contextUsage.usagePercentage > 90 && (
               <div className="usage-warning-message">
-                ⚠️ Approaching context limit! Consider reducing file selection
-                or prompt length.
+                Approaching context limit! Consider reducing file selection or prompt length.
               </div>
             )}
           </div>

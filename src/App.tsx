@@ -1,21 +1,19 @@
-import { useState, useCallback, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 
-import TitleBar from "./components/TitleBar";
+import ContextUsagePanel from "./components/ContextUsagePanel";
 import FileTreePanel from "./components/FileTreePanel";
 import PromptPanel from "./components/PromptPanel";
 import TaskTypePanel from "./components/TaskTypePanel";
-import ContextUsagePanel from "./components/ContextUsagePanel";
-
-import type { FileReadResult, SelectedFile, TaskType } from "./types";
+import TitleBar from "./components/TitleBar";
 import { TASK_TYPES } from "./data/taskTypes";
-
-import { useFileTree } from "./hooks/useFileTree";
 import { useFileSelection } from "./hooks/useFileSelection";
 
-import { filterFileTree } from "./utils/searchUtils";
+import { useFileTree } from "./hooks/useFileTree";
+import type { FileReadResult, SelectedFile, TaskType } from "./types";
 import { buildPromptPayload } from "./utils/promptBuilder";
+import { filterFileTree } from "./utils/searchUtils";
 
 function App() {
   const {
@@ -26,7 +24,7 @@ function App() {
     scanTime,
     selectFolder,
     refreshDirectory,
-    setMessage
+    setMessage,
   } = useFileTree();
 
   const {
@@ -50,39 +48,39 @@ function App() {
   const [prompt, setPrompt] = useState<string>(defaultTaskType?.prompt ?? "");
   const [includeFileStructure, setIncludeFileStructure] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [, setSelectedLLM] = useState<string>("gpt-4");
+  const [, setSelectedLLM] = useState<string>("chatgpt-plus-business-non-reasoning");
   const [selectedFileContents, setSelectedFileContents] = useState<SelectedFile[]>([]);
   const [promptTokenCount, setPromptTokenCount] = useState<number>(0);
   const [isCountingTokens, setIsCountingTokens] = useState<boolean>(false);
 
-  const createSelectedFile = useCallback(
-    (filePath: string, content: string): SelectedFile => {
-      const fileName = filePath.split(/[/\\]/).pop() || filePath;
+  const createSelectedFile = useCallback((filePath: string, content: string): SelectedFile => {
+    const fileName = filePath.split(/[/\\]/).pop() || filePath;
 
-      return {
-        path: filePath,
-        name: fileName,
-        content
-      };
-    },
-    [],
-  );
+    return {
+      path: filePath,
+      name: fileName,
+      content,
+    };
+  }, []);
 
-  const readFilesSequentially = useCallback(async (paths: string[]): Promise<SelectedFile[]> => {
-    const loaded: SelectedFile[] = [];
+  const readFilesSequentially = useCallback(
+    async (paths: string[]): Promise<SelectedFile[]> => {
+      const loaded: SelectedFile[] = [];
 
-    for (const filePath of paths) {
-      try {
-        const content = await invoke<string>("read_file_content", { filePath });
-        loaded.push(createSelectedFile(filePath, content));
-      } catch (error) {
-        console.error(`Failed to read file ${filePath}:`, error);
-        setMessage(`Failed to read file ${filePath}`);
+      for (const filePath of paths) {
+        try {
+          const content = await invoke<string>("read_file_content", { filePath });
+          loaded.push(createSelectedFile(filePath, content));
+        } catch (error) {
+          console.error(`Failed to read file ${filePath}:`, error);
+          setMessage(`Failed to read file ${filePath}`);
+        }
       }
-    }
 
-    return loaded;
-  }, [createSelectedFile, setMessage]);
+      return loaded;
+    },
+    [createSelectedFile, setMessage],
+  );
 
   // Keep cached file contents in sync with selection
   useEffect(() => {
@@ -130,13 +128,16 @@ function App() {
   );
 
   // Search change handler
-  const handleSearchChange = useCallback((newSearchTerm: string) => {
-    setSearchTerm(newSearchTerm);
+  const handleSearchChange = useCallback(
+    (newSearchTerm: string) => {
+      setSearchTerm(newSearchTerm);
 
-    if (newSearchTerm.trim()) {
-      expandAllDirectories();
-    }
-  }, [expandAllDirectories]);
+      if (newSearchTerm.trim()) {
+        expandAllDirectories();
+      }
+    },
+    [expandAllDirectories],
+  );
 
   // LLM selection handler
   const handleLLMChange = useCallback((llmId: string) => {
@@ -160,7 +161,7 @@ function App() {
 
     try {
       const results = await invoke<FileReadResult[]>("read_file_contents", {
-        filePaths: missingPaths
+        filePaths: missingPaths,
       });
 
       const errors = results.filter((result) => result.error);
@@ -177,34 +178,31 @@ function App() {
     }
 
     const combinedFiles = [...existingMap.values(), ...loadedFiles].filter((file) =>
-      selectedFiles.has(file.path)
+      selectedFiles.has(file.path),
     );
     combinedFiles.sort((a, b) => a.path.localeCompare(b.path));
     setSelectedFileContents(combinedFiles);
 
     return combinedFiles;
-  }, [
-    selectedFiles,
-    selectedFileContents,
-    setMessage,
-    createSelectedFile,
-    readFilesSequentially
-  ]);
+  }, [selectedFiles, selectedFileContents, setMessage, createSelectedFile, readFilesSequentially]);
 
-  const buildPayloadWithFiles = useCallback((files: SelectedFile[]) => {
-    if (selectedFiles.size === 0) {
-      return "";
-    }
+  const buildPayloadWithFiles = useCallback(
+    (files: SelectedFile[]) => {
+      if (selectedFiles.size === 0) {
+        return "";
+      }
 
-    return buildPromptPayload({
-      selectedFolder,
-      fileTree,
-      selectedFiles,
-      includeFileStructure,
-      prompt,
-      filesWithContent: files
-    });
-  }, [selectedFolder, fileTree, selectedFiles, includeFileStructure, prompt]);
+      return buildPromptPayload({
+        selectedFolder,
+        fileTree,
+        selectedFiles,
+        includeFileStructure,
+        prompt,
+        filesWithContent: files,
+      });
+    },
+    [selectedFolder, fileTree, selectedFiles, includeFileStructure, prompt],
+  );
 
   // Recompute prompt token count for the full XML payload
   useEffect(() => {
@@ -250,16 +248,7 @@ function App() {
       isCancelled = true;
       clearTimeout(timeoutId);
     };
-  }, [
-    selectedFiles,
-    prompt,
-    includeFileStructure,
-    fileTree,
-    selectedFolder,
-    ensureSelectedFileContents,
-    buildPayloadWithFiles,
-    selectedFileContents
-  ]);
+  }, [selectedFiles, ensureSelectedFileContents, buildPayloadWithFiles, selectedFileContents]);
 
   // Clipboard functionality
   const copyToClipboard = useCallback(async () => {
@@ -345,4 +334,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
