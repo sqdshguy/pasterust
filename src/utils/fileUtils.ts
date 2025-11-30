@@ -94,6 +94,43 @@ export const generateFileTreeStructure = (nodes: FileNode[], prefix: string = ""
   return result;
 };
 
+const buildFileMapTree = (nodes: FileNode[], prefix: string, selectedFiles: Set<string>): string => {
+  let result = "";
+
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const isLast = i === nodes.length - 1;
+    const currentPrefix = prefix + (isLast ? "└── " : "├── ");
+    const nextPrefix = prefix + (isLast ? "    " : "│   ");
+
+    const isSelected = selectedFiles.has(node.path);
+    const label = node.is_directory ? node.name : `${node.name}${isSelected ? " *" : ""}`;
+
+    result += `${currentPrefix}${label}\n`;
+
+    if (node.children && node.children.length > 0) {
+      result += buildFileMapTree(node.children, nextPrefix, selectedFiles);
+    }
+  }
+
+  return result;
+};
+
+export const generateFileMap = (
+  rootPath: string,
+  nodes: FileNode[],
+  selectedFiles: Set<string>
+): string => {
+  const header = rootPath || "/";
+  const tree = buildFileMapTree(nodes, "", selectedFiles).trimEnd();
+
+  if (!tree) {
+    return header;
+  }
+
+  return `${header}\n${tree}`;
+};
+
 export const collectAllDirectories = (nodes: FileNode[]): string[] => {
   const dirs: string[] = [];
   for (const node of nodes) {

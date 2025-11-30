@@ -18,7 +18,7 @@ import { useFileSelection } from "./hooks/useFileSelection";
 
 // Import utilities
 import { filterFileTree } from "./utils/searchUtils";
-import { generateFileTreeStructure } from "./utils/fileUtils";
+import { generateFileMap } from "./utils/fileUtils";
 
 function App() {
   // Use custom hooks for complex state management
@@ -118,35 +118,42 @@ function App() {
         }
       }
 
-      let xmlOutput = `<source_code_context>\n`;
+      const sortedFileContents = fileContents.sort((a, b) =>
+        a.path.localeCompare(b.path)
+      );
 
-      if (prompt.trim()) {
-        xmlOutput += `  <user_prompt>\n${prompt.trim()}\n  </user_prompt>\n\n`;
-      }
+      let xmlOutput = "";
 
       if (includeFileStructure && fileTree.length > 0) {
-        xmlOutput += `  <file_structure>\n`;
-        xmlOutput += generateFileTreeStructure(fileTree);
-        xmlOutput += `  </file_structure>\n\n`;
+        xmlOutput += `<file_map>\n`;
+        xmlOutput += `${generateFileMap(selectedFolder, fileTree, selectedFiles)}\n`;
+        xmlOutput += `</file_map>\n\n`;
       }
 
-      xmlOutput += `  <files>\n`;
+      xmlOutput += `<file_contents>\n`;
 
-      for (const file of fileContents) {
-        xmlOutput += `    <file path="${file.path}" name="${file.name}">\n`;
+      for (const file of sortedFileContents) {
+        const fileExtension = file.name.split(".").pop() || "";
+        const codeFence = fileExtension ? fileExtension : "";
+
+        xmlOutput += `File: ${file.path}\n`;
+        xmlOutput += `\`\`\`${codeFence}\n`;
         xmlOutput += `${file.content}\n`;
-        xmlOutput += `    </file>\n\n`;
+        xmlOutput += `\`\`\`\n\n`;
       }
 
-      xmlOutput += `  </files>\n`;
-      xmlOutput += `</source_code_context>`;
+      xmlOutput += `</file_contents>`;
+
+      if (prompt.trim()) {
+        xmlOutput += `\n<user_instructions>\n${prompt.trim()}\n</user_instructions>`;
+      }
 
       await invoke("copy_to_clipboard", { content: xmlOutput });
-      setMessage(`Copied ${fileContents.length} files to clipboard!`);
+      setMessage(`Copied ${sortedFileContents.length} files to clipboard!`);
     } catch (error) {
       setMessage(`Error: ${error}`);
     }
-  }, [selectedFiles, prompt, includeFileStructure, fileTree]);
+  }, [selectedFiles, prompt, includeFileStructure, fileTree, selectedFolder]);
 
   // Render the modular app
   return (
