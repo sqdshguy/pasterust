@@ -1,17 +1,12 @@
 use ignore::WalkBuilder;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use crate::config::AppConfig;
 use crate::error::{AppError, AppResult};
 use crate::file_filters::is_likely_binary;
-use crate::tokenizer::count_tokens_adaptive;
-
-#[cfg(feature = "parallel")]
-use rayon::prelude::*;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FileNode {
@@ -44,9 +39,8 @@ impl DirectoryScanner {
             )));
         }
 
-        let (all_entries, source_file_entries) = self.collect_entries(path)?;
-        let token_counts = self.count_tokens(&source_file_entries)?;
-        let root_children = self.build_tree(path, all_entries, token_counts)?;
+        let all_entries = self.collect_entries(path)?;
+        let root_children = self.build_tree(path, all_entries)?;
 
         let total_elapsed = start_time.elapsed();
         println!(
@@ -57,13 +51,9 @@ impl DirectoryScanner {
         Ok(root_children)
     }
 
-    fn collect_entries(
-        &self,
-        path: &Path,
-    ) -> AppResult<(Vec<EntryInfo>, Vec<(PathBuf, fs::Metadata)>)> {
+    fn collect_entries(&self, path: &Path) -> AppResult<Vec<EntryInfo>> {
         let scan_start = Instant::now();
         let mut all_entries = Vec::new();
-        let mut source_file_entries = Vec::new();
 
         let mut builder = WalkBuilder::new(path);
         builder.max_depth(Some(self.config.max_depth)).hidden(false);
@@ -96,7 +86,6 @@ impl DirectoryScanner {
             let is_source = !is_dir && !is_binary;
 
             if is_source && !is_dir && metadata.len() <= self.config.max_file_size {
-                source_file_entries.push((entry_path.to_path_buf(), metadata));
             }
 
             all_entries.push(EntryInfo {
@@ -112,55 +101,16 @@ impl DirectoryScanner {
             "📂 Directory walking completed in {:.2?} - found {} entries, {} source files",
             scan_elapsed,
             all_entries.len(),
-            source_file_entries.len()
+            all_entries.iter().filter(|e| e.is_source_file).count()
         );
 
-        Ok((all_entries, source_file_entries))
-    }
-
-    fn count_tokens(
-        &self,
-        source_file_entries: &[(PathBuf, fs::Metadata)],
-    ) -> AppResult<HashMap<PathBuf, Option<usize>>> {
-        let token_start = Instant::now();
-
-        let process_entry = |(path, metadata): &(PathBuf, fs::Metadata)| {
-            let count = count_tokens_adaptive(path, metadata, &self.config).unwrap_or(None);
-            (path.clone(), count)
-        };
-
-        let token_counts: HashMap<PathBuf, Option<usize>> =
-            if self.config.enable_parallel_processing {
-                #[cfg(feature = "parallel")]
-                {
-                    source_file_entries.par_iter().map(process_entry).collect()
-                }
-                #[cfg(not(feature = "parallel"))]
-                {
-                    source_file_entries.iter().map(process_entry).collect()
-                }
-            } else {
-                source_file_entries.iter().map(process_entry).collect()
-            };
-
-        let token_elapsed = token_start.elapsed();
-        let total_tokens: usize = token_counts.values().flatten().sum();
-
-        println!(
-            "🔢 Token counting completed in {:.2?} - processed {} files, {} total tokens",
-            token_elapsed,
-            source_file_entries.len(),
-            total_tokens
-        );
-
-        Ok(token_counts)
+        Ok(all_entries)
     }
 
     fn build_tree(
         &self,
         root_path: &Path,
         all_entries: Vec<EntryInfo>,
-        token_counts: HashMap<PathBuf, Option<usize>>,
     ) -> AppResult<Vec<FileNode>> {
         let build_start = Instant::now();
 
@@ -168,12 +118,6 @@ impl DirectoryScanner {
             HashMap::with_capacity(all_entries.len() / 2);
 
         for entry in all_entries {
-            let token_count = if entry.is_source_file && !entry.is_directory {
-                token_counts.get(&entry.path).copied().flatten()
-            } else {
-                None
-            };
-
             let parent_path = entry
                 .path
                 .parent()
@@ -190,7 +134,7 @@ impl DirectoryScanner {
                     None
                 },
                 is_source_file: entry.is_source_file,
-                token_count,
+                token_count: None,
             };
 
             parent_map.entry(parent_path).or_default().push(node);
