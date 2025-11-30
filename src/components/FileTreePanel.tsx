@@ -1,6 +1,6 @@
 import FileControls from "./FileControls";
 import TreeNode from "./TreeNode";
-import { FileNode } from "../types";
+import type { FileNode } from "../types";
 
 interface FileTreePanelProps {
   fileTree: FileNode[];

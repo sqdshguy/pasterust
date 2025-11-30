@@ -1,4 +1,4 @@
-import { FileNode } from '../types';
+import type { FileNode } from '../types';
 
 export const countSourceFiles = (nodes: FileNode[]): number => {
   let count = 0;

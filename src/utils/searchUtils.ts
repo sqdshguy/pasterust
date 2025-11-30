@@ -1,4 +1,4 @@
-import { FileNode } from '../types';
+import type { FileNode } from '../types';
 
 export const filterFileTree = (nodes: FileNode[], searchTerm: string): FileNode[] => {
   if (!searchTerm.trim()) return nodes;

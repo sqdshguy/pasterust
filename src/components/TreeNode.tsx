@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileNode } from '../types';
+import type { FileNode } from '../types';
 import FileIcon from './FileIcon';
 
 interface TreeNodeProps {

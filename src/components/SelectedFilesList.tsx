@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SelectedFileInfo } from '../types';
+import type { SelectedFileInfo } from '../types';
 import FileIcon from './FileIcon';
 
 interface SelectedFilesListProps {

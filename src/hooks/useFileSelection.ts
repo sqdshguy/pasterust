@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { FileNode, SelectedFileInfo, FileSelectionHookResult, DirectoryCheckboxState } from '../types';
+import type { FileNode, SelectedFileInfo, FileSelectionHookResult, DirectoryCheckboxState } from '../types';
 import { 
   getNodeByPath, 
   getSourceFilesInDirectory, 

@@ -1,4 +1,4 @@
-import { FileNode, SelectedFile } from "../types";
+import type { FileNode, SelectedFile } from "../types";
 import { generateFileMap } from "./fileUtils";
 
 interface PromptPayloadOptions {

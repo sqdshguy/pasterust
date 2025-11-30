@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { TaskType } from "../types";
+import type { TaskType } from "../types";
 import { TASK_TYPES } from "../data/taskTypes";
 
 interface TaskTypePanelProps {

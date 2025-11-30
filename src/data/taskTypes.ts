@@ -1,4 +1,4 @@
-import { TaskType } from "../types";
+import type { TaskType } from "../types";
 
 // Predefined task modes with preset prompts
 export const TASK_TYPES: TaskType[] = [

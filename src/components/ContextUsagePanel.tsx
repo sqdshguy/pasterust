@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { LLM_MODELS, LLM_CATEGORIES, getModelById } from "../data/llmModels";
-import { ContextUsage } from "../types";
+import type { ContextUsage } from "../types";
 
 interface ContextUsagePanelProps {
   promptTokenCount: number;
