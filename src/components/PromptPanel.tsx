@@ -1,5 +1,5 @@
-import SelectedFilesList from './SelectedFilesList';
-import { SelectedFileInfo } from '../types';
+import SelectedFilesList from "./SelectedFilesList";
+import { SelectedFileInfo } from "../types";
 
 interface PromptPanelProps {
   selectedFiles: Set<string>;
@@ -33,10 +33,12 @@ function PromptPanel({
   return (
     <div className="prompt-panel">
       <div className="panel-header">
-        <h3>✏️ Prompt & Actions</h3>
+        <h3>Prompt & Actions</h3>
         <div className="selection-status">
           {selectedFiles.size} files selected •{" "}
-          {isCountingTokens ? "Counting prompt tokens..." : `${promptTokenCount.toLocaleString()} prompt tokens`}
+          {isCountingTokens
+            ? "Counting prompt tokens..."
+            : `${promptTokenCount.toLocaleString()} prompt tokens`}
         </div>
       </div>
 
@@ -62,31 +64,32 @@ function PromptPanel({
       <div className="actions-section">
         <div className="copy-options">
           <label className="file-structure-checkbox">
-            <input
-              type="checkbox"
-              checked={includeFileStructure}
-              onChange={(e) => onIncludeFileStructureChange(e.target.checked)}
-            />
+            <span className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={includeFileStructure}
+                onChange={(e) => onIncludeFileStructureChange(e.target.checked)}
+              />
+              <span
+                className={`checkbox-box ${includeFileStructure ? "checked" : "unchecked"}`}
+                aria-hidden="true"
+              />
+            </span>
             <span className="checkbox-label">Include file structure tree</span>
           </label>
         </div>
-        
-        <button 
+
+        <button
           onClick={onCopyToClipboard}
           disabled={isLoading || selectedFiles.size === 0}
           className="copy-button"
         >
-          {isLoading ? "Processing..." : `📋 Copy ${selectedFiles.size} Files`}
+          {isLoading ? "Processing..." : "Copy"}
         </button>
-
-        {message && (
-          <div className={`status-message ${message.includes('Error') ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
-export default PromptPanel; 
+export default PromptPanel;

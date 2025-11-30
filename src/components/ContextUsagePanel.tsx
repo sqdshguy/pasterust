@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
-import { LLM_MODELS, LLM_CATEGORIES, getModelById } from '../data/llmModels';
-import { ContextUsage } from '../types';
+import { useState, useMemo } from "react";
+import { LLM_MODELS, LLM_CATEGORIES, getModelById } from "../data/llmModels";
+import { ContextUsage } from "../types";
 
 interface ContextUsagePanelProps {
   promptTokenCount: number;
@@ -13,9 +13,9 @@ function ContextUsagePanel({
   promptTokenCount,
   isCountingTokens,
   selectedFilesCount,
-  onLLMChange
+  onLLMChange,
 }: ContextUsagePanelProps) {
-  const [selectedLLM, setSelectedLLM] = useState<string>('gpt-4');
+  const [selectedLLM, setSelectedLLM] = useState<string>("gpt-4");
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   // Calculate context usage
@@ -30,7 +30,7 @@ function ContextUsagePanel({
       totalTokens,
       selectedLLM,
       usagePercentage,
-      contextLimit
+      contextLimit,
     };
   }, [promptTokenCount, selectedLLM]);
 
@@ -41,26 +41,35 @@ function ContextUsagePanel({
   };
 
   const getUsageColor = (percentage: number): string => {
-    if (percentage < 70) return 'var(--success-color)';
-    if (percentage < 90) return '#f59e0b'; // amber
-    return 'var(--error-color)';
+    if (percentage < 70) return "var(--success-color)";
+    if (percentage < 90) return "#f59e0b"; // amber
+    return "var(--error-color)";
   };
 
   const getUsageColorClass = (percentage: number): string => {
-    if (percentage < 70) return 'usage-safe';
-    if (percentage < 90) return 'usage-warning';
-    return 'usage-danger';
+    if (percentage < 70) return "usage-safe";
+    if (percentage < 90) return "usage-warning";
+    return "usage-danger";
   };
 
   return (
     <div className="context-usage-panel">
       <div className="panel-header">
-        <h3 onClick={() => setIsExpanded(!isExpanded)} className="expandable-header">
-          📊 Context Usage
-          <span className={`expand-icon ${isExpanded ? 'expanded' : ''}`}>▼</span>
+        <h3
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="expandable-header"
+        >
+          Context Usage
+          <span className={`expand-icon ${isExpanded ? "expanded" : ""}`}>
+            ▼
+          </span>
         </h3>
-        <div className={`usage-badge ${getUsageColorClass(contextUsage.usagePercentage)}`}>
-          {contextUsage.totalTokens.toLocaleString()}/{(contextUsage.contextLimit / 1000).toFixed(0)}k ({contextUsage.usagePercentage.toFixed(1)}%)
+        <div
+          className={`usage-badge ${getUsageColorClass(contextUsage.usagePercentage)}`}
+        >
+          {contextUsage.totalTokens.toLocaleString()}/
+          {(contextUsage.contextLimit / 1000).toFixed(0)}k (
+          {contextUsage.usagePercentage.toFixed(1)}%)
         </div>
       </div>
 
@@ -77,14 +86,17 @@ function ContextUsagePanel({
               className="llm-select"
             >
               {Object.entries(LLM_CATEGORIES).map(([categoryKey, category]) => {
-                const modelsInCategory = LLM_MODELS.filter(model => model.category === categoryKey);
+                const modelsInCategory = LLM_MODELS.filter(
+                  (model) => model.category === categoryKey,
+                );
                 if (modelsInCategory.length === 0) return null;
 
                 return (
                   <optgroup key={categoryKey} label={category.name}>
                     {modelsInCategory.map((model) => (
                       <option key={model.id} value={model.id}>
-                        {model.icon} {model.name} ({(model.contextLimit / 1000).toFixed(0)}k tokens)
+                        {model.icon} {model.name} (
+                        {(model.contextLimit / 1000).toFixed(0)}k tokens)
                       </option>
                     ))}
                   </optgroup>
@@ -116,7 +128,9 @@ function ContextUsagePanel({
                   className="progress-fill"
                   style={{
                     width: `${Math.min(contextUsage.usagePercentage, 100)}%`,
-                    backgroundColor: getUsageColor(contextUsage.usagePercentage)
+                    backgroundColor: getUsageColor(
+                      contextUsage.usagePercentage,
+                    ),
                   }}
                 />
               </div>
@@ -137,15 +151,14 @@ function ContextUsagePanel({
               <div className="breakdown-item">
                 <span className="breakdown-icon">📁</span>
                 <span className="breakdown-label">Files included:</span>
-                <span className="breakdown-value">
-                  {selectedFilesCount}
-                </span>
+                <span className="breakdown-value">{selectedFilesCount}</span>
               </div>
             </div>
 
             {contextUsage.usagePercentage > 90 && (
               <div className="usage-warning-message">
-                ⚠️ Approaching context limit! Consider reducing file selection or prompt length.
+                ⚠️ Approaching context limit! Consider reducing file selection
+                or prompt length.
               </div>
             )}
           </div>

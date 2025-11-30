@@ -1,7 +1,6 @@
-import FileControls from './FileControls';
-import TreeNode from './TreeNode';
-import { FileNode } from '../types';
-import { useMemo } from 'react';
+import FileControls from "./FileControls";
+import TreeNode from "./TreeNode";
+import { FileNode } from "../types";
 
 interface FileTreePanelProps {
   fileTree: FileNode[];
@@ -10,7 +9,9 @@ interface FileTreePanelProps {
   onToggleFile: (filePath: string) => void;
   onToggleDirectory: (dirPath: string) => void;
   onToggleDirectorySelection: (dirPath: string) => void;
-  getDirectoryCheckboxState: (dirPath: string) => 'checked' | 'unchecked' | 'indeterminate';
+  getDirectoryCheckboxState: (
+    dirPath: string,
+  ) => "checked" | "unchecked" | "indeterminate";
   onSelectAllFiles: () => void;
   onDeselectAllFiles: () => void;
   onExpandAllDirectories: () => void;
@@ -32,39 +33,10 @@ function FileTreePanel({
   onExpandAllDirectories,
   onCollapseAllDirectories,
   searchTerm,
-  onSearchChange
+  onSearchChange,
 }: FileTreePanelProps) {
-  // Count search results
-  const searchResultsCount = useMemo(() => {
-    if (!searchTerm.trim()) return null;
-    
-    const countMatches = (nodes: FileNode[]): number => {
-      let count = 0;
-      for (const node of nodes) {
-        const matches = node.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-                       node.path.toLowerCase().includes(searchTerm.toLowerCase().trim());
-        if (matches) count++;
-        if (node.children) {
-          count += countMatches(node.children);
-        }
-      }
-      return count;
-    };
-    
-    return countMatches(fileTree);
-  }, [fileTree, searchTerm]);
-
   return (
     <div className="file-tree-panel">
-      <div className="panel-header">
-        <h3>📁 Source Files</h3>
-        {searchResultsCount !== null && (
-          <div className="search-results-badge">
-            {searchResultsCount} match{searchResultsCount !== 1 ? 'es' : ''}
-          </div>
-        )}
-      </div>
-
       <FileControls
         onSelectAll={onSelectAllFiles}
         onDeselectAll={onDeselectAllFiles}
@@ -94,7 +66,7 @@ function FileTreePanel({
           <div className="no-files-message">
             {searchTerm.trim()
               ? `No files or folders found for "${searchTerm.trim()}".`
-              : 'No files found in this folder.'}
+              : "No files found in this folder."}
           </div>
         )}
       </div>
@@ -102,4 +74,4 @@ function FileTreePanel({
   );
 }
 
-export default FileTreePanel; 
+export default FileTreePanel;
