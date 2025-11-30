@@ -41,7 +41,7 @@ pub fn is_source_file(path: &Path) -> bool {
 fn is_special_source_file(path: &Path) -> bool {
     if let Some(filename) = path.file_name() {
         let name = filename.to_string_lossy().to_lowercase();
-        matches!(name.as_str(), 
+        matches!(name.as_str(),
             "dockerfile" | "makefile" | "rakefile" | "gemfile" | "podfile" |
             "vagrantfile" | "gulpfile" | "gruntfile" | "webpack.config" |
             "rollup.config" | "vite.config" | "jest.config" | "babel.config"
@@ -52,18 +52,75 @@ fn is_special_source_file(path: &Path) -> bool {
 }
 
 pub fn should_skip_directory(dir_name: &str) -> bool {
-    matches!(dir_name,
-        "node_modules" | ".git" | ".svn" | ".hg" | "target" | "build" | "dist" |
-        ".next" | ".nuxt" | "__pycache__" | ".pytest_cache" | ".mypy_cache" |
-        "venv" | "env" | ".env" | ".venv" | ".tox" | ".vscode" | ".idea" | "bin" | "obj" |
-        ".packages" | "vendor" | "deps" | "_build" | "out" | "coverage" |
-        "logs" | "log" | "tmp" | "temp" | "cache" | ".cache" | ".gradle" | ".settings" |
-        ".terraform" | ".serverless" | ".parcel-cache" | ".yarn" | ".pnp" | ".history" |
-        ".DS_Store" | ".AppleDouble" | ".Trashes" | ".sass-cache" | ".bundle" | ".cabal-sandbox" |
-        ".stack-work" | ".eggs" | ".ipynb_checkpoints" | ".Rproj.user" |
-        ".metadata" | ".classpath" | ".project" | ".externalToolBuilders" | ".idea_modules" |
-        ".nb-gradle" | ".nb-build" | ".nbproject" | ".vagrant" | ".circleci" |
-        ".github" | ".gitlab" | ".hgstore" | ".svn-base" | ".svn-work" | ".svn-pristine"
+    matches!(
+        dir_name,
+        "node_modules"
+            | ".git"
+            | ".svn"
+            | ".hg"
+            | "target"
+            | "build"
+            | "dist"
+            | ".next"
+            | ".nuxt"
+            | "__pycache__"
+            | ".pytest_cache"
+            | ".mypy_cache"
+            | "venv"
+            | "env"
+            | ".env"
+            | ".venv"
+            | ".tox"
+            | ".vscode"
+            | ".idea"
+            | "bin"
+            | "obj"
+            | ".packages"
+            | "vendor"
+            | "deps"
+            | "_build"
+            | "out"
+            | "coverage"
+            | "logs"
+            | "log"
+            | "tmp"
+            | "temp"
+            | "cache"
+            | ".cache"
+            | ".gradle"
+            | ".settings"
+            | ".terraform"
+            | ".serverless"
+            | ".parcel-cache"
+            | ".yarn"
+            | ".pnp"
+            | ".history"
+            | ".DS_Store"
+            | ".AppleDouble"
+            | ".Trashes"
+            | ".sass-cache"
+            | ".bundle"
+            | ".cabal-sandbox"
+            | ".stack-work"
+            | ".eggs"
+            | ".ipynb_checkpoints"
+            | ".Rproj.user"
+            | ".metadata"
+            | ".classpath"
+            | ".project"
+            | ".externalToolBuilders"
+            | ".idea_modules"
+            | ".nb-gradle"
+            | ".nb-build"
+            | ".nbproject"
+            | ".vagrant"
+            | ".circleci"
+            | ".github"
+            | ".gitlab"
+            | ".hgstore"
+            | ".svn-base"
+            | ".svn-work"
+            | ".svn-pristine"
     )
 }
 
