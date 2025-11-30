@@ -18,7 +18,6 @@ function ContextUsagePanel({
   const [selectedLLM, setSelectedLLM] = useState<string>("gpt-4");
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
-  // Calculate context usage
   const contextUsage = useMemo((): ContextUsage => {
     const model = getModelById(selectedLLM);
     const contextLimit = model?.contextLimit || 128000;

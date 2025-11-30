@@ -2,27 +2,22 @@ import { useState, useCallback, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
-// Import our modular components
 import TitleBar from "./components/TitleBar";
 import FileTreePanel from "./components/FileTreePanel";
 import PromptPanel from "./components/PromptPanel";
 import TaskTypePanel from "./components/TaskTypePanel";
 import ContextUsagePanel from "./components/ContextUsagePanel";
 
-// Import shared types
 import type { FileReadResult, SelectedFile, TaskType } from "./types";
 import { TASK_TYPES } from "./data/taskTypes";
 
-// Import custom hooks
 import { useFileTree } from "./hooks/useFileTree";
 import { useFileSelection } from "./hooks/useFileSelection";
 
-// Import utilities
 import { filterFileTree } from "./utils/searchUtils";
 import { buildPromptPayload } from "./utils/promptBuilder";
 
 function App() {
-  // Use custom hooks for complex state management
   const {
     selectedFolder,
     fileTree,
@@ -48,7 +43,6 @@ function App() {
     getSelectedFilesInfo,
   } = useFileSelection(fileTree);
 
-  // Local state
   const defaultTaskType = TASK_TYPES.find((task) => task.id === "standard");
   const [selectedTaskType, setSelectedTaskType] = useState<string | null>(
     defaultTaskType?.id ?? null,
@@ -138,7 +132,7 @@ function App() {
   // Search change handler
   const handleSearchChange = useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
-    
+
     if (newSearchTerm.trim()) {
       expandAllDirectories();
     }
@@ -291,7 +285,6 @@ function App() {
     }
   }, [selectedFiles, ensureSelectedFileContents, buildPayloadWithFiles, setMessage]);
 
-  // Render the modular app
   return (
     <div className="app-window">
       <TitleBar

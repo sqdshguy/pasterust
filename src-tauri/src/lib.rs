@@ -1,6 +1,6 @@
-use std::fs;
 use rayon::prelude::*;
 use serde::Serialize;
+use std::fs;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
 mod config;
@@ -39,8 +39,6 @@ async fn select_folder(app: tauri::AppHandle) -> Result<Option<String>, String> 
         }
     }
 }
-
-// File filtering and token counting functionality moved to separate modules
 
 #[tauri::command]
 fn scan_directory(folder_path: String) -> Result<Vec<FileNode>, String> {
