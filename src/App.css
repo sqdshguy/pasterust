@@ -11,6 +11,8 @@
   --focus-ring-strong: rgba(15, 23, 42, 0.12);
   --shadow-soft: rgba(15, 23, 42, 0.08);
   --shadow-strong: rgba(15, 23, 42, 0.16);
+  --selection-bg: rgba(15, 23, 42, 0.06);
+  --selection-accent: rgba(15, 23, 42, 0.18);
   --background: #ffffff;
   --surface: #f8fafc;
   --border: #e2e8f0;
@@ -50,6 +52,8 @@
     --focus-ring-strong: rgba(255, 255, 255, 0.16);
     --shadow-soft: rgba(0, 0, 0, 0.45);
     --shadow-strong: rgba(0, 0, 0, 0.65);
+    --selection-bg: rgba(255, 255, 255, 0.06);
+    --selection-accent: rgba(255, 255, 255, 0.18);
     --background: #000000;         /* pure black */
     --surface: #121212;            /* near-black surface */
     --panel-bg: #111111;           /* very dark panel */
@@ -481,7 +485,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+  background: linear-gradient(90deg, var(--selection-bg) 0%, var(--selection-bg) 100%);
   opacity: 0;
   transform: translateX(-100%);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -494,8 +498,8 @@ body {
 }
 
 .tree-node.file-selected .tree-node-header {
-  background: rgba(37, 99, 235, 0.08);
-  border-left: 3px solid var(--primary-color);
+  background: var(--selection-bg);
+  border-left: 3px solid var(--selection-accent);
   padding-left: calc(0.75rem - 3px);
 }
 
@@ -896,7 +900,7 @@ body {
     background: transparent;
   }
   30% {
-    background: rgba(37, 99, 235, 0.15);
+    background: var(--selection-bg);
     transform: translateX(3px);
   }
   100% {
