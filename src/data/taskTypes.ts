@@ -24,9 +24,13 @@ export const TASK_TYPES: TaskType[] = [
   {
     id: "performance-review",
     name: "Performance Review",
-    description: "Scan the selected code for performance bottlenecks. (TODO prompt)",
-    prompt:
-      "TODO: Analyze the provided files for performance bottlenecks, hotspots, and resource-heavy patterns. Highlight root causes and concrete optimizations.",
+    description: "Review selected code for runtime and memory hotspots, suggesting optimizations.",
+    prompt: `You are a performance reviewer. Analyze the selected files for bottlenecks and wasted work.
+
+- Call out hot paths: redundant loops, N+1 lookups, heavy allocations, sync I/O, unnecessary rerenders.
+- Suggest better data structures, caching, batching, memoization, or streaming where helpful.
+- Give concrete code-level changes with file/function pointers.
+- Prioritize quick wins first; include simple validation ideas (profiling/benchmarks).`,
     category: "mode",
   },
   {
