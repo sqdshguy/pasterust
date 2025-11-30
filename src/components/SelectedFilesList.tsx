@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SelectedFileInfo } from '../types';
+import FileIcon from './FileIcon';
 
 interface SelectedFilesListProps {
   selectedFilesInfo: SelectedFileInfo[];
@@ -41,7 +42,9 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
               style={{ '--stagger-delay': staggerDelay } as React.CSSProperties}
             >
               <div className="selected-file-info">
-                <span className="selected-file-icon">{file.icon}</span>
+                <span className="selected-file-icon">
+                  <FileIcon />
+                </span>
                 <span className="selected-file-name">{file.name}</span>
               </div>
               <button 

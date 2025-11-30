@@ -3,8 +3,7 @@ import { FileNode, SelectedFileInfo, FileSelectionHookResult, DirectoryCheckboxS
 import { 
   getNodeByPath, 
   getSourceFilesInDirectory, 
-  getAllSourceFiles,
-  getFileIcon 
+  getAllSourceFiles
 } from '../utils/fileUtils';
 
 export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult => {
@@ -107,8 +106,7 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
         return {
           path: filePath,
           name: node.name,
-          tokenCount: node.token_count,
-          icon: getFileIcon(node.name)
+          tokenCount: node.token_count
         } as SelectedFileInfo;
       })
       .filter((file): file is SelectedFileInfo => file !== null)

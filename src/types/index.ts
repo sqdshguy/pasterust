@@ -17,7 +17,6 @@ export interface SelectedFileInfo {
   path: string;
   name: string;
   tokenCount?: number;
-  icon: string;
 }
 
 export type TaskCategory = 'mode' | 'analysis' | 'refactor' | 'debug' | 'feature' | 'documentation';

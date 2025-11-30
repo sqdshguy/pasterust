@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileNode } from '../types';
+import FileIcon from './FileIcon';
 
 interface TreeNodeProps {
   node: FileNode;
@@ -68,20 +69,6 @@ function TreeNode({
     }
     setWasExpanded(isExpanded);
   }, [isExpanded, wasExpanded]);
-  
-  const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase() || '';
-    const iconMap: { [key: string]: string } = {
-      'js': '🟨', 'ts': '🔷', 'jsx': '⚛️', 'tsx': '⚛️',
-      'py': '🐍', 'rs': '🦀', 'java': '☕', 'cpp': '⚙️', 'c': '⚙️',
-      'html': '🌐', 'css': '🎨', 'scss': '🎨', 'sass': '🎨',
-      'json': '📋', 'xml': '📄', 'yaml': '📝', 'yml': '📝',
-      'md': '📖', 'txt': '📄', 'go': '🐹', 'php': '🐘',
-      'rb': '💎', 'swift': '🦉', 'kt': '🎯', 'dart': '🎯'
-    };
-    return iconMap[ext] || '📄';
-  };
-
   // Count source files recursively
   const countSourceFiles = (node: FileNode): number => {
     let count = node.is_source_file ? 1 : 0;
@@ -210,7 +197,9 @@ function TreeNode({
               />
             </span>
             <span className={`file-info ${!node.is_source_file ? 'non-source' : ''}`}>
-              <span className="file-icon">{getFileIcon(node.name)}</span>
+              <span className="file-icon">
+                <FileIcon />
+              </span>
               <span className="file-name">{node.name}</span>
               {!node.is_source_file && <span className="non-source-label">(not a source file)</span>}
             </span>
