@@ -20,7 +20,7 @@ export interface SelectedFileInfo {
   icon: string;
 }
 
-export type TaskCategory = 'analysis' | 'refactor' | 'debug' | 'feature' | 'documentation';
+export type TaskCategory = 'mode' | 'analysis' | 'refactor' | 'debug' | 'feature' | 'documentation';
 
 export interface TaskType {
   id: string;

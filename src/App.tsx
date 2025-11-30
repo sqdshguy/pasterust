@@ -11,6 +11,7 @@ import ContextUsagePanel from "./components/ContextUsagePanel";
 
 // Import shared types
 import { SelectedFile, TaskType } from "./types";
+import { TASK_TYPES } from "./data/taskTypes";
 
 // Import custom hooks
 import { useFileTree } from "./hooks/useFileTree";
@@ -48,8 +49,11 @@ function App() {
   } = useFileSelection(fileTree);
 
   // Local state
-  const [prompt, setPrompt] = useState<string>("");
-  const [selectedTaskType, setSelectedTaskType] = useState<string | null>(null);
+  const defaultTaskType = TASK_TYPES.find((task) => task.id === "standard");
+  const [selectedTaskType, setSelectedTaskType] = useState<string | null>(
+    defaultTaskType?.id ?? null,
+  );
+  const [prompt, setPrompt] = useState<string>(defaultTaskType?.prompt ?? "");
   const [includeFileStructure, setIncludeFileStructure] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [, setSelectedLLM] = useState<string>("gpt-4");
@@ -72,23 +76,35 @@ function App() {
   }, [fileTree, searchTerm]);
 
   // Task type selection handler
-  const handleTaskTypeSelect = useCallback((taskType: TaskType | null) => {
-    if (taskType) {
-      setSelectedTaskType(taskType.id);
-      setPrompt(taskType.prompt);
-    } else {
-      setSelectedTaskType(null);
-      setPrompt("");
-    }
-  }, []);
+  const handleTaskTypeSelect = useCallback(
+    (taskType: TaskType | null) => {
+      if (taskType) {
+        setSelectedTaskType(taskType.id);
+        setPrompt(taskType.prompt);
+        return;
+      }
+
+      if (defaultTaskType) {
+        setSelectedTaskType(defaultTaskType.id);
+        setPrompt(defaultTaskType.prompt);
+      } else {
+        setSelectedTaskType(null);
+        setPrompt("");
+      }
+    },
+    [defaultTaskType],
+  );
 
   // Prompt change handler that clears task type when manually edited
-  const handlePromptChange = useCallback((newPrompt: string) => {
-    setPrompt(newPrompt);
-    if (selectedTaskType) {
-      setSelectedTaskType(null);
-    }
-  }, [selectedTaskType]);
+  const handlePromptChange = useCallback(
+    (newPrompt: string) => {
+      setPrompt(newPrompt);
+      if (selectedTaskType && selectedTaskType !== "standard") {
+        setSelectedTaskType(defaultTaskType?.id ?? null);
+      }
+    },
+    [selectedTaskType, defaultTaskType],
+  );
 
   // Search change handler
   const handleSearchChange = useCallback((newSearchTerm: string) => {
