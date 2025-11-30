@@ -1,6 +1,6 @@
 {
   "name": "pasterust",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Blazing fast source code context generator for LLMs",
   "author": "Oleksandr Herasymov",
   "license": "MIT",
@@ -9,13 +9,21 @@
     "url": "https://github.com/sqdshguy/pasterust.git"
   },
   "homepage": "https://github.com/sqdshguy/pasterust#readme",
-  "keywords": ["llm", "context", "rust", "tauri"],
+  "keywords": [
+    "llm",
+    "context",
+    "rust",
+    "tauri"
+  ],
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "lint:fix": "biome check --write .",
+    "lint": "biome check .",
+    "format": "biome format --write .",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -27,6 +35,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.8",
     "@tauri-apps/cli": "^2.9.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
