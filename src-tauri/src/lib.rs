@@ -1,4 +1,6 @@
 use std::fs;
+use rayon::prelude::*;
+use serde::Serialize;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
 mod config;
@@ -11,6 +13,13 @@ use config::DEFAULT_CONFIG;
 use error::AppError;
 use scanner::{DirectoryScanner, FileNode};
 use tokenizer::count_prompt_tokens;
+
+#[derive(Serialize)]
+struct FileContent {
+    path: String,
+    content: Option<String>,
+    error: Option<String>,
+}
 
 #[tauri::command]
 async fn select_folder(app: tauri::AppHandle) -> Result<Option<String>, String> {
@@ -47,6 +56,32 @@ fn read_file_content(file_path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn read_file_contents(file_paths: Vec<String>) -> Result<Vec<FileContent>, String> {
+    let results: Vec<FileContent> = file_paths
+        .into_par_iter()
+        .map(|path| match fs::read_to_string(&path) {
+            Ok(content) => FileContent {
+                path,
+                content: Some(content),
+                error: None,
+            },
+            Err(e) => {
+                let error_message: String =
+                    AppError::FileReadError(format!("Failed to read file {}: {}", path, e)).into();
+
+                FileContent {
+                    path,
+                    content: None,
+                    error: Some(error_message),
+                }
+            }
+        })
+        .collect();
+
+    Ok(results)
+}
+
+#[tauri::command]
 fn count_prompt_tokens_command(prompt: String) -> Result<usize, String> {
     count_prompt_tokens(&prompt).map_err(|e| e.into())
 }
@@ -68,6 +103,7 @@ pub fn run() {
             select_folder,
             scan_directory,
             read_file_content,
+            read_file_contents,
             copy_to_clipboard,
             count_prompt_tokens_command
         ])

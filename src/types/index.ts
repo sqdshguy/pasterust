@@ -19,6 +19,12 @@ export interface SelectedFileInfo {
   tokenCount?: number;
 }
 
+export interface FileReadResult {
+  path: string;
+  content?: string;
+  error?: string;
+}
+
 export type TaskCategory = 'mode' | 'analysis' | 'refactor' | 'debug' | 'feature' | 'documentation';
 
 export interface TaskType {

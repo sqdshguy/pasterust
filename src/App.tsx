@@ -10,7 +10,7 @@ import TaskTypePanel from "./components/TaskTypePanel";
 import ContextUsagePanel from "./components/ContextUsagePanel";
 
 // Import shared types
-import { SelectedFile, TaskType } from "./types";
+import type { FileReadResult, SelectedFile, TaskType } from "./types";
 import { TASK_TYPES } from "./data/taskTypes";
 
 // Import custom hooks
@@ -60,6 +60,35 @@ function App() {
   const [selectedFileContents, setSelectedFileContents] = useState<SelectedFile[]>([]);
   const [promptTokenCount, setPromptTokenCount] = useState<number>(0);
   const [isCountingTokens, setIsCountingTokens] = useState<boolean>(false);
+
+  const createSelectedFile = useCallback(
+    (filePath: string, content: string): SelectedFile => {
+      const fileName = filePath.split(/[/\\]/).pop() || filePath;
+
+      return {
+        path: filePath,
+        name: fileName,
+        content
+      };
+    },
+    [],
+  );
+
+  const readFilesSequentially = useCallback(async (paths: string[]): Promise<SelectedFile[]> => {
+    const loaded: SelectedFile[] = [];
+
+    for (const filePath of paths) {
+      try {
+        const content = await invoke<string>("read_file_content", { filePath });
+        loaded.push(createSelectedFile(filePath, content));
+      } catch (error) {
+        console.error(`Failed to read file ${filePath}:`, error);
+        setMessage(`Failed to read file ${filePath}`);
+      }
+    }
+
+    return loaded;
+  }, [createSelectedFile, setMessage]);
 
   // Keep cached file contents in sync with selection
   useEffect(() => {
@@ -130,34 +159,43 @@ function App() {
     const missingPaths = selectedPaths.filter((path) => !existingMap.has(path));
 
     if (missingPaths.length === 0) {
-      return [...selectedFileContents].sort((a, b) => a.path.localeCompare(b.path));
+      return [...existingMap.values()].sort((a, b) => a.path.localeCompare(b.path));
     }
 
-    const loadedFiles: SelectedFile[] = [];
+    let loadedFiles: SelectedFile[] = [];
 
-    for (const filePath of missingPaths) {
-      try {
-        const content = await invoke<string>("read_file_content", { filePath });
-        const fileName = filePath.split(/[/\\]/).pop() || filePath;
-        loadedFiles.push({
-          path: filePath,
-          name: fileName,
-          content
-        });
-      } catch (error) {
-        console.error(`Failed to read file ${filePath}:`, error);
-        setMessage(`Failed to read file ${filePath}`);
+    try {
+      const results = await invoke<FileReadResult[]>("read_file_contents", {
+        filePaths: missingPaths
+      });
+
+      const errors = results.filter((result) => result.error);
+      if (errors.length > 0) {
+        setMessage(errors[0].error ?? "Failed to read some files");
       }
+
+      loadedFiles = results
+        .filter((result) => result.content !== undefined)
+        .map((result) => createSelectedFile(result.path, result.content ?? ""));
+    } catch (error) {
+      console.error("Failed to read files in batch, falling back to sequential reads:", error);
+      loadedFiles = await readFilesSequentially(missingPaths);
     }
 
-    const combinedFiles = [...selectedFileContents, ...loadedFiles].filter((file) =>
+    const combinedFiles = [...existingMap.values(), ...loadedFiles].filter((file) =>
       selectedFiles.has(file.path)
     );
     combinedFiles.sort((a, b) => a.path.localeCompare(b.path));
     setSelectedFileContents(combinedFiles);
 
     return combinedFiles;
-  }, [selectedFiles, selectedFileContents, setMessage]);
+  }, [
+    selectedFiles,
+    selectedFileContents,
+    setMessage,
+    createSelectedFile,
+    readFilesSequentially
+  ]);
 
   const buildPayloadWithFiles = useCallback((files: SelectedFile[]) => {
     if (selectedFiles.size === 0) {
