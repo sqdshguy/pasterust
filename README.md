@@ -6,7 +6,7 @@ PasteRust is a lightweight desktop app that copies selected files (plus an optio
 
 ## Background
 
-[pastemax](https://github.com/kleneway/pastemax) solved the workflow but Electron startup time did not. My version keeps the workflow while delivering a small footprint, native speed, and minimal startup delay.
+RepoPrompt didn't support Linux/Windows when this project was created, so I needed an alternative for personal use. But alternatives were not really good. For instance, [PasteMax](https://github.com/kleneway/pastemax) solved the workflow partially but Electron sluggishness did not satisfy me. My version keeps the workflow in tact while delivering a small footprint, native speed, and minimal startup delay.
 
 ## Features
 
