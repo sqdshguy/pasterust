@@ -23,18 +23,26 @@ PasteRust is a lightweight desktop app that copies selected files (plus an optio
 2. Review detected files.
 3. Select the files to include.
 4. (Optional) Add a custom prompt.
-5. Copy the generated XML.
+5. Copy the generated XML prompt.
 
-Current prompt structure:
+Prompt structure (mirrors the "Standard" preset from RepoPrompt - credit to them for the format and research):
 ```xml
-<source_code_context>
-  <user_prompt>Refactor for async/await best practices.</user_prompt>
-  <files>
-    <file path="src/lib.rs" name="lib.rs">
-      <!-- content -->
-    </file>
-  </files>
-</source_code_context>
+<file_map>
+/path/to/project
+├── src
+│   ├── main.rs *
+│   └── lib.rs
+└── Cargo.toml
+</file_map>
+<file_contents>
+File: /path/to/project/src/main.rs
+```rs
+fn main() {}
+```
+</file_contents>
+<user_instructions>
+Refactor for async/await best practices.
+</user_instructions>
 ```
 
 ## Stack
