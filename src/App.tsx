@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
@@ -18,7 +18,7 @@ import { useFileSelection } from "./hooks/useFileSelection";
 
 // Import utilities
 import { filterFileTree } from "./utils/searchUtils";
-import { generateFileMap } from "./utils/fileUtils";
+import { buildPromptPayload } from "./utils/promptBuilder";
 
 function App() {
   // Use custom hooks for complex state management
@@ -44,7 +44,6 @@ function App() {
     deselectAllFiles,
     expandAllDirectories,
     collapseAllDirectories,
-    getSelectedTokenCount,
     getSelectedFilesInfo,
   } = useFileSelection(fileTree);
 
@@ -54,6 +53,18 @@ function App() {
   const [includeFileStructure, setIncludeFileStructure] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [, setSelectedLLM] = useState<string>("gpt-4");
+  const [selectedFileContents, setSelectedFileContents] = useState<SelectedFile[]>([]);
+  const [promptTokenCount, setPromptTokenCount] = useState<number>(0);
+  const [isCountingTokens, setIsCountingTokens] = useState<boolean>(false);
+
+  // Keep cached file contents in sync with selection
+  useEffect(() => {
+    const selectedPaths = new Set(selectedFiles);
+    setSelectedFileContents((prev) => {
+      const filtered = prev.filter((file) => selectedPaths.has(file.path));
+      return filtered.length === prev.length ? prev : filtered;
+    });
+  }, [selectedFiles]);
 
   // Get filtered file tree
   const filteredFileTree = useCallback(() => {
@@ -93,6 +104,115 @@ function App() {
     setSelectedLLM(llmId);
   }, []);
 
+  const ensureSelectedFileContents = useCallback(async (): Promise<SelectedFile[]> => {
+    if (selectedFiles.size === 0) {
+      return [];
+    }
+
+    const selectedPaths = Array.from(selectedFiles);
+    const existingMap = new Map(selectedFileContents.map((file) => [file.path, file]));
+    const missingPaths = selectedPaths.filter((path) => !existingMap.has(path));
+
+    if (missingPaths.length === 0) {
+      return [...selectedFileContents].sort((a, b) => a.path.localeCompare(b.path));
+    }
+
+    const loadedFiles: SelectedFile[] = [];
+
+    for (const filePath of missingPaths) {
+      try {
+        const content = await invoke<string>("read_file_content", { filePath });
+        const fileName = filePath.split(/[/\\]/).pop() || filePath;
+        loadedFiles.push({
+          path: filePath,
+          name: fileName,
+          content
+        });
+      } catch (error) {
+        console.error(`Failed to read file ${filePath}:`, error);
+        setMessage(`Failed to read file ${filePath}`);
+      }
+    }
+
+    const combinedFiles = [...selectedFileContents, ...loadedFiles].filter((file) =>
+      selectedFiles.has(file.path)
+    );
+    combinedFiles.sort((a, b) => a.path.localeCompare(b.path));
+    setSelectedFileContents(combinedFiles);
+
+    return combinedFiles;
+  }, [selectedFiles, selectedFileContents, setMessage]);
+
+  const buildPayloadWithFiles = useCallback((files: SelectedFile[]) => {
+    if (selectedFiles.size === 0) {
+      return "";
+    }
+
+    return buildPromptPayload({
+      selectedFolder,
+      fileTree,
+      selectedFiles,
+      includeFileStructure,
+      prompt,
+      filesWithContent: files
+    });
+  }, [selectedFolder, fileTree, selectedFiles, includeFileStructure, prompt]);
+
+  // Recompute prompt token count for the full XML payload
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (selectedFiles.size === 0) {
+      setPromptTokenCount(0);
+      setIsCountingTokens(false);
+      return;
+    }
+
+    setIsCountingTokens(true);
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const filesWithContent = await ensureSelectedFileContents();
+        if (isCancelled) return;
+
+        const payload = buildPayloadWithFiles(filesWithContent);
+        if (!payload.trim()) {
+          setPromptTokenCount(0);
+          return;
+        }
+
+        const tokenCount = await invoke<number>("count_prompt_tokens_command", { prompt: payload });
+        if (!isCancelled) {
+          setPromptTokenCount(tokenCount);
+        }
+      } catch (error) {
+        console.error("Failed to count prompt tokens:", error);
+        if (!isCancelled) {
+          const fallbackPayload = buildPayloadWithFiles(selectedFileContents);
+          setPromptTokenCount(Math.ceil(fallbackPayload.length / 4));
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsCountingTokens(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [
+    selectedFiles,
+    prompt,
+    includeFileStructure,
+    fileTree,
+    selectedFolder,
+    ensureSelectedFileContents,
+    buildPayloadWithFiles,
+    selectedFileContents
+  ]);
+
   // Clipboard functionality
   const copyToClipboard = useCallback(async () => {
     if (selectedFiles.size === 0) {
@@ -101,59 +221,21 @@ function App() {
     }
 
     try {
-      const selectedFilesArray = Array.from(selectedFiles);
-      const fileContents: SelectedFile[] = [];
+      const filesWithContent = await ensureSelectedFileContents();
 
-      for (const filePath of selectedFilesArray) {
-        try {
-          const content = await invoke<string>("read_file_content", { filePath });
-          const fileName = filePath.split(/[/\\]/).pop() || filePath;
-          fileContents.push({
-            path: filePath,
-            name: fileName,
-            content
-          });
-        } catch (error) {
-          console.error(`Failed to read file ${filePath}:`, error);
-        }
+      if (filesWithContent.length === 0) {
+        setMessage("No file contents available to copy");
+        return;
       }
 
-      const sortedFileContents = fileContents.sort((a, b) =>
-        a.path.localeCompare(b.path)
-      );
-
-      let xmlOutput = "";
-
-      if (includeFileStructure && fileTree.length > 0) {
-        xmlOutput += `<file_map>\n`;
-        xmlOutput += `${generateFileMap(selectedFolder, fileTree, selectedFiles)}\n`;
-        xmlOutput += `</file_map>\n\n`;
-      }
-
-      xmlOutput += `<file_contents>\n`;
-
-      for (const file of sortedFileContents) {
-        const fileExtension = file.name.split(".").pop() || "";
-        const codeFence = fileExtension ? fileExtension : "";
-
-        xmlOutput += `File: ${file.path}\n`;
-        xmlOutput += `\`\`\`${codeFence}\n`;
-        xmlOutput += `${file.content}\n`;
-        xmlOutput += `\`\`\`\n\n`;
-      }
-
-      xmlOutput += `</file_contents>`;
-
-      if (prompt.trim()) {
-        xmlOutput += `\n<user_instructions>\n${prompt.trim()}\n</user_instructions>`;
-      }
+      const xmlOutput = buildPayloadWithFiles(filesWithContent);
 
       await invoke("copy_to_clipboard", { content: xmlOutput });
-      setMessage(`Copied ${sortedFileContents.length} files to clipboard!`);
+      setMessage(`Copied ${filesWithContent.length} files to clipboard!`);
     } catch (error) {
       setMessage(`Error: ${error}`);
     }
-  }, [selectedFiles, prompt, includeFileStructure, fileTree, selectedFolder]);
+  }, [selectedFiles, ensureSelectedFileContents, buildPayloadWithFiles, setMessage]);
 
   // Render the modular app
   return (
@@ -191,8 +273,9 @@ function App() {
 
         <div className="right-panel">
           <ContextUsagePanel
-            prompt={prompt}
-            selectedTokenCount={getSelectedTokenCount()}
+            promptTokenCount={promptTokenCount}
+            isCountingTokens={isCountingTokens}
+            selectedFilesCount={selectedFiles.size}
             onLLMChange={handleLLMChange}
           />
           <PromptPanel
@@ -202,11 +285,12 @@ function App() {
             isLoading={isLoading}
             message={message}
             includeFileStructure={includeFileStructure}
+            promptTokenCount={promptTokenCount}
+            isCountingTokens={isCountingTokens}
             onPromptChange={handlePromptChange}
             onToggleFile={toggleFileSelection}
             onCopyToClipboard={copyToClipboard}
             onIncludeFileStructureChange={setIncludeFileStructure}
-            getSelectedTokenCount={getSelectedTokenCount}
           />
         </div>
       </div>

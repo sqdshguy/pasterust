@@ -8,11 +8,12 @@ interface PromptPanelProps {
   isLoading: boolean;
   message: string;
   includeFileStructure: boolean;
+  promptTokenCount: number;
+  isCountingTokens: boolean;
   onPromptChange: (prompt: string) => void;
   onToggleFile: (filePath: string) => void;
   onCopyToClipboard: () => void;
   onIncludeFileStructureChange: (include: boolean) => void;
-  getSelectedTokenCount: () => number;
 }
 
 function PromptPanel({
@@ -22,18 +23,20 @@ function PromptPanel({
   isLoading,
   message,
   includeFileStructure,
+  promptTokenCount,
+  isCountingTokens,
   onPromptChange,
   onToggleFile,
   onCopyToClipboard,
   onIncludeFileStructureChange,
-  getSelectedTokenCount
 }: PromptPanelProps) {
   return (
     <div className="prompt-panel">
       <div className="panel-header">
         <h3>✏️ Prompt & Actions</h3>
         <div className="selection-status">
-          {selectedFiles.size} files selected ({getSelectedTokenCount().toLocaleString()} tokens)
+          {selectedFiles.size} files selected •{" "}
+          {isCountingTokens ? "Counting prompt tokens..." : `${promptTokenCount.toLocaleString()} prompt tokens`}
         </div>
       </div>
 

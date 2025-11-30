@@ -1,66 +1,38 @@
-import { useState, useMemo, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { useState, useMemo } from 'react';
 import { LLM_MODELS, LLM_CATEGORIES, getModelById } from '../data/llmModels';
 import { ContextUsage } from '../types';
 
 interface ContextUsagePanelProps {
-  prompt: string;
-  selectedTokenCount: number;
+  promptTokenCount: number;
+  isCountingTokens: boolean;
+  selectedFilesCount: number;
   onLLMChange?: (llmId: string) => void;
 }
 
 function ContextUsagePanel({
-  prompt,
-  selectedTokenCount,
+  promptTokenCount,
+  isCountingTokens,
+  selectedFilesCount,
   onLLMChange
 }: ContextUsagePanelProps) {
   const [selectedLLM, setSelectedLLM] = useState<string>('gpt-4');
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [promptTokens, setPromptTokens] = useState<number>(0);
-  const [isCountingTokens, setIsCountingTokens] = useState<boolean>(false);
-
-  // Accurate prompt token counting using Rust backend
-  useEffect(() => {
-    const countTokens = async () => {
-      if (!prompt.trim()) {
-        setPromptTokens(0);
-        return;
-      }
-
-      setIsCountingTokens(true);
-      try {
-        const tokenCount = await invoke<number>('count_prompt_tokens_command', { prompt });
-        setPromptTokens(tokenCount);
-      } catch (error) {
-        console.error('Failed to count prompt tokens:', error);
-        // Fallback to approximation if Rust call fails
-        setPromptTokens(Math.ceil(prompt.length / 4));
-      } finally {
-        setIsCountingTokens(false);
-      }
-    };
-
-    // Debounce token counting to avoid excessive calls
-    const timeoutId = setTimeout(countTokens, 300);
-    return () => clearTimeout(timeoutId);
-  }, [prompt]);
 
   // Calculate context usage
   const contextUsage = useMemo((): ContextUsage => {
     const model = getModelById(selectedLLM);
     const contextLimit = model?.contextLimit || 128000;
-    const totalTokens = promptTokens + selectedTokenCount;
+    const totalTokens = promptTokenCount;
     const usagePercentage = (totalTokens / contextLimit) * 100;
 
     return {
-      promptTokens,
-      fileTokens: selectedTokenCount,
+      promptTokens: promptTokenCount,
       totalTokens,
       selectedLLM,
       usagePercentage,
       contextLimit
     };
-  }, [promptTokens, selectedTokenCount, selectedLLM]);
+  }, [promptTokenCount, selectedLLM]);
 
   const handleLLMChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newLLM = event.target.value;
@@ -152,8 +124,8 @@ function ContextUsagePanel({
 
             <div className="token-breakdown">
               <div className="breakdown-item">
-                <span className="breakdown-icon">✏️</span>
-                <span className="breakdown-label">Prompt:</span>
+                <span className="breakdown-icon">🧾</span>
+                <span className="breakdown-label">Prompt payload:</span>
                 <span className="breakdown-value">
                   {isCountingTokens ? (
                     <span className="counting-tokens">Counting...</span>
@@ -164,9 +136,9 @@ function ContextUsagePanel({
               </div>
               <div className="breakdown-item">
                 <span className="breakdown-icon">📁</span>
-                <span className="breakdown-label">Files:</span>
+                <span className="breakdown-label">Files included:</span>
                 <span className="breakdown-value">
-                  {contextUsage.fileTokens.toLocaleString()} tokens
+                  {selectedFilesCount}
                 </span>
               </div>
             </div>

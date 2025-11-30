@@ -9,15 +9,6 @@ export const countSourceFiles = (nodes: FileNode[]): number => {
   return count;
 };
 
-export const countTotalTokens = (nodes: FileNode[]): number => {
-  let total = 0;
-  for (const node of nodes) {
-    total += node.token_count || 0;
-    if (node.children) total += countTotalTokens(node.children);
-  }
-  return total;
-};
-
 export const getAllSourceFiles = (nodes: FileNode[]): string[] => {
   const sourceFiles: string[] = [];
   for (const node of nodes) {

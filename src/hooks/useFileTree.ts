@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { FileNode, FileTreeHookResult } from '../types';
-import { countSourceFiles, countTotalTokens } from '../utils/fileUtils';
+import { countSourceFiles } from '../utils/fileUtils';
 
 export const useFileTree = (): FileTreeHookResult => {
   const [selectedFolder, setSelectedFolder] = useState<string>("");
@@ -28,8 +28,7 @@ export const useFileTree = (): FileTreeHookResult => {
         setFileTree(tree);
 
         const totalFiles = countSourceFiles(tree);
-        const totalTokens = countTotalTokens(tree);
-        setMessage(`Found ${totalFiles} source files with ${totalTokens.toLocaleString()} total tokens`);
+        setMessage(`Found ${totalFiles} source files`);
       }
     } catch (error) {
       setMessage(`Error: ${error}`);
@@ -59,8 +58,7 @@ export const useFileTree = (): FileTreeHookResult => {
       setFileTree(tree);
 
       const totalFiles = countSourceFiles(tree);
-      const totalTokens = countTotalTokens(tree);
-      setMessage(`Refreshed: Found ${totalFiles} source files with ${totalTokens.toLocaleString()} total tokens`);
+      setMessage(`Refreshed: Found ${totalFiles} source files`);
     } catch (error) {
       setMessage(`Error refreshing: ${error}`);
       setScanTime(null);

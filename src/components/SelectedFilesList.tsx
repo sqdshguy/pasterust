@@ -43,11 +43,6 @@ function SelectedFilesList({ selectedFilesInfo, onRemoveFile }: SelectedFilesLis
               <div className="selected-file-info">
                 <span className="selected-file-icon">{file.icon}</span>
                 <span className="selected-file-name">{file.name}</span>
-                {file.tokenCount && (
-                  <span className="selected-file-tokens">
-                    ~{file.tokenCount.toLocaleString()} tokens
-                  </span>
-                )}
               </div>
               <button 
                 className="remove-file-btn"

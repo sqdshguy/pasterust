@@ -32,7 +32,6 @@ export interface TaskType {
 
 export interface ContextUsage {
   promptTokens: number;
-  fileTokens: number;
   totalTokens: number;
   selectedLLM: string;
   usagePercentage: number;
@@ -97,7 +96,6 @@ export interface FileSelectionHookResult {
   deselectAllFiles: () => void;
   expandAllDirectories: () => void;
   collapseAllDirectories: () => void;
-  getSelectedTokenCount: () => number;
   getSelectedFilesInfo: () => SelectedFileInfo[];
   resetSelection: () => void;
 }

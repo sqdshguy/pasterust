@@ -94,22 +94,6 @@ function TreeNode({
     return count;
   };
 
-  // Count tokens recursively for directories
-  const countTotalTokens = (node: FileNode): number => {
-    let total = node.token_count || 0;
-    if (node.children) {
-      for (const child of node.children) {
-        total += countTotalTokens(child);
-      }
-    }
-    return total;
-  };
-
-  // Format token count with commas
-  const formatTokenCount = (count: number): string => {
-    return count.toLocaleString();
-  };
-
   // Generate CSS classes for animations
   const getTreeNodeClasses = () => {
     const classes = ['tree-node'];
@@ -158,7 +142,7 @@ function TreeNode({
             <span className="file-icon">{getFileIcon(node.name, true)}</span>
             <span className="file-name">{node.name}</span>
             <span className="source-count">
-              {countSourceFiles(node)} source files, {formatTokenCount(countTotalTokens(node))} tokens
+              {countSourceFiles(node)} source files
             </span>
           </div>
         ) : (
@@ -172,9 +156,6 @@ function TreeNode({
             <span className={`file-info ${!node.is_source_file ? 'non-source' : ''}`}>
               <span className="file-icon">{getFileIcon(node.name, false)}</span>
               <span className="file-name">{node.name}</span>
-              {node.is_source_file && node.token_count && (
-                <span className="token-count">{formatTokenCount(node.token_count)} tokens</span>
-              )}
               {!node.is_source_file && <span className="non-source-label">(not a source file)</span>}
             </span>
           </label>

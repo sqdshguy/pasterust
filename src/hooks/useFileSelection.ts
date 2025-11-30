@@ -98,17 +98,6 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
     setExpandedDirs(new Set());
   }, []);
 
-  const getSelectedTokenCount = useCallback((): number => {
-    let totalTokens = 0;
-    for (const filePath of selectedFiles) {
-      const node = getNodeByPath(fileTree, filePath);
-      if (node && node.token_count) {
-        totalTokens += node.token_count;
-      }
-    }
-    return totalTokens;
-  }, [selectedFiles, fileTree]);
-
   const getSelectedFilesInfo = useCallback((): SelectedFileInfo[] => {
     return Array.from(selectedFiles)
       .map(filePath => {
@@ -142,7 +131,6 @@ export const useFileSelection = (fileTree: FileNode[]): FileSelectionHookResult 
     deselectAllFiles,
     expandAllDirectories,
     collapseAllDirectories,
-    getSelectedTokenCount,
     getSelectedFilesInfo,
     resetSelection
   };
