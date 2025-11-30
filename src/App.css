@@ -1,17 +1,16 @@
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
-}
-
 :root {
   --primary-color: #2563eb;
   --primary-hover: #1d4ed8;
   --secondary-color: #64748b;
   --success-color: #059669;
   --error-color: #dc2626;
+  --cta-color: #b45309;
+  --cta-hover: #a35a15;
+  --cta-shadow: rgba(164, 90, 21, 0.25);
+  --focus-ring: rgba(15, 23, 42, 0.08);
+  --focus-ring-strong: rgba(15, 23, 42, 0.12);
+  --shadow-soft: rgba(15, 23, 42, 0.08);
+  --shadow-strong: rgba(15, 23, 42, 0.16);
   --background: #ffffff;
   --surface: #f8fafc;
   --border: #e2e8f0;
@@ -44,6 +43,13 @@
     --secondary-color: #4b5563;    /* muted gray */
     --success-color: #047857;      /* deep green */
     --error-color: #b91c1c;        /* rich crimson */
+    --cta-color: #d97706;          /* warm rust */
+    --cta-hover: #b45309;          /* softer hover */
+    --cta-shadow: rgba(217, 119, 6, 0.28);
+    --focus-ring: rgba(255, 255, 255, 0.12);
+    --focus-ring-strong: rgba(255, 255, 255, 0.16);
+    --shadow-soft: rgba(0, 0, 0, 0.45);
+    --shadow-strong: rgba(0, 0, 0, 0.65);
     --background: #000000;         /* pure black */
     --surface: #121212;            /* near-black surface */
     --panel-bg: #111111;           /* very dark panel */
@@ -143,8 +149,11 @@ body {
   max-width: 400px;
 }
 
-.header-folder-info .folder-icon {
-  font-size: 1rem;
+.header-folder-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 .header-folder-info .folder-path {
@@ -176,6 +185,20 @@ body {
   gap: 0.5rem;
 }
 
+.header-action-icon {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+  transition: transform 0.25s ease;
+}
+
+.header-spinner {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+  animation: spin 0.9s linear infinite;
+}
+
 .header-refresh-btn {
   padding: 0.5rem;
   background: var(--surface);
@@ -195,13 +218,15 @@ body {
 .header-refresh-btn:hover:not(:disabled) {
   background: var(--border);
   color: var(--text-primary);
+}
+
+.header-refresh-btn:hover:not(:disabled) .header-action-icon {
   transform: rotate(180deg);
 }
 
 .header-refresh-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
 .header-select-folder-btn {
@@ -228,6 +253,15 @@ body {
 .header-select-folder-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Main Layout */
@@ -286,16 +320,6 @@ body {
   border: 1px solid var(--border);
 }
 
-.search-results-badge {
-  font-size: 0.75rem;
-  color: #ffc107;
-  background: rgba(255, 193, 7, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  font-weight: 500;
-}
-
 /* Folder Selection - Legacy styles removed, now in header */
 
 /* File Controls */
@@ -313,6 +337,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .search-input {
@@ -330,7 +355,7 @@ body {
 .search-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .search-input::placeholder {
@@ -361,13 +386,17 @@ body {
 }
 
 .control-actions {
-  display: flex;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .control-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
+  width: 100%;
 }
 
 .control-btn {
@@ -379,6 +408,11 @@ body {
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -468,13 +502,13 @@ body {
 /* Pulse animation for newly selected files */
 @keyframes selection-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0 var(--focus-ring-strong);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 8px transparent;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
@@ -541,8 +575,8 @@ body {
 
 .checkbox-wrapper {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -557,26 +591,27 @@ body {
 }
 
 .checkbox-box {
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid var(--border);
-  border-radius: 5px;
-  background: linear-gradient(180deg, var(--surface) 0%, var(--background) 100%);
+  width: 16px;
+  height: 16px;
+  border: 1.4px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--text-primary);
   transition: all 0.2s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  position: relative;
 }
 
 .checkbox-input:focus-visible + .checkbox-box {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 3px var(--focus-ring-strong);
   border-color: var(--primary-color);
 }
 
 .checkbox-box::after {
   content: '';
+  position: absolute;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
@@ -587,31 +622,36 @@ body {
 }
 
 .checkbox-box.checked {
-  background: linear-gradient(180deg, var(--primary-color) 0%, #1d4ed8 100%);
+  background: var(--primary-color);
   border-color: var(--primary-color);
   color: #fff;
 }
 
 .checkbox-box.checked::after {
-  width: 6px;
-  height: 10px;
-  border-right: 2px solid currentColor;
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
   opacity: 1;
 }
 
 .checkbox-box.indeterminate {
-  background: linear-gradient(180deg, var(--primary-color) 0%, #1d4ed8 100%);
+  background: var(--primary-color);
   border-color: var(--primary-color);
   color: #fff;
 }
 
 .checkbox-box.indeterminate::after {
-  width: 9px;
+  width: 8px;
   height: 2px;
   background: currentColor;
   border-radius: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 1;
 }
 
@@ -747,7 +787,7 @@ body {
 
 /* Right Panel Content */
 .prompt-section {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -821,7 +861,7 @@ body {
 
 .selected-file-item:hover {
   border-color: var(--primary-color);
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 1px 3px var(--shadow-soft);
   transform: translateY(-1px) scale(1.02);
 }
 
@@ -967,6 +1007,7 @@ body {
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
 }
 
 .clear-all-btn:hover {
@@ -995,14 +1036,18 @@ body {
 
 /* Actions Section */
 .actions-section {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .copy-options {
-  margin-bottom: 1rem;
+  margin: 0;
+  flex: 1;
 }
 
 .file-structure-checkbox {
@@ -1019,54 +1064,56 @@ body {
   color: var(--primary-color);
 }
 
-.file-structure-checkbox input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--primary-color);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-}
-
-.file-structure-checkbox input[type="checkbox"]:checked {
-  animation: checkbox-check 0.3s ease-out;
-}
-
-.file-structure-checkbox:hover input[type="checkbox"] {
-  transform: scale(1.1);
-}
-
 .checkbox-label {
   font-weight: 500;
   user-select: none;
 }
 
 .copy-button {
-  width: 100%;
+  width: auto;
+  min-width: 140px;
   padding: 1rem 1.5rem;
-  background: var(--success-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: var(--cta-color);
+  color: #fff;
+  border: 1px solid var(--cta-color);
+  border-radius: 4px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-shadow: 0 6px 18px var(--cta-shadow);
 }
 
 .copy-button:hover:not(:disabled) {
-  background: #047857;
+  background: var(--cta-hover);
+  border-color: var(--cta-hover);
   transform: translateY(-1px);
+  box-shadow: 0 8px 20px var(--cta-shadow);
+}
+
+.copy-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px var(--cta-shadow);
 }
 
 .copy-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
+}
+
+@media (max-width: 768px) {
+  .actions-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .copy-button {
+    width: 100%;
+  }
 }
 
 /* Status Message */
@@ -1236,7 +1283,7 @@ body {
 .prompt-textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .prompt-textarea::placeholder {
@@ -1247,8 +1294,9 @@ body {
 .task-type-panel {
   background: var(--panel-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  border-radius: 0;
+  border-top: 0;
+  margin-bottom: 0;
   overflow: visible;
   flex-shrink: 0;
   position: relative;
@@ -1291,19 +1339,21 @@ body {
 }
 
 .task-type-open-btn {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   padding: 0.55rem 0.9rem;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
 .task-type-open-btn:hover {
-  background: var(--primary-hover);
+  background: var(--border);
+  color: var(--text-primary);
+  border-color: var(--border);
 }
 
 .task-type-popover {
@@ -1314,18 +1364,42 @@ body {
   z-index: 10;
   background: var(--background);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
   padding: 1rem;
   max-height: 380px;
   overflow-y: auto;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  animation: task-type-popover-in 160ms ease forwards;
+}
+
+@keyframes task-type-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-type-popover {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Prompt Panel Styles */
 .prompt-panel {
   background: var(--panel-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
+  border-top: 0;
+  border-left: 0;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1380,7 +1454,7 @@ body {
   background: var(--surface);
   border-color: var(--primary-color);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 2px 8px var(--shadow-soft);
 }
 
 .task-type-button.selected {
@@ -1388,7 +1462,7 @@ body {
   border-color: var(--primary-color);
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 12px var(--shadow-strong);
 }
 
 .task-type-name {
@@ -1532,8 +1606,10 @@ body {
 
 /* Context Usage Panel */
 .context-usage-panel {
-  background: var(--background);
-  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-left: 0;
   flex-shrink: 0;
 }
 
@@ -1626,7 +1702,7 @@ body {
 .llm-select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .llm-select:hover {
