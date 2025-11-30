@@ -27,6 +27,9 @@ function TreeNode({
   const isExpanded = expandedDirs.has(node.path);
   const hasChildren = node.children && node.children.length > 0;
   const isSelected = selectedFiles.has(node.path);
+  const directoryState = node.is_directory
+    ? getDirectoryCheckboxState(node.path)
+    : 'unchecked';
   
   // Check if this node matches the search term
   const isSearchMatch = searchTerm && searchTerm.trim() 
@@ -66,11 +69,7 @@ function TreeNode({
     setWasExpanded(isExpanded);
   }, [isExpanded, wasExpanded]);
   
-  const getFileIcon = (fileName: string, isDirectory: boolean) => {
-    if (isDirectory) {
-      return isExpanded ? '📂' : '📁';
-    }
-    
+  const getFileIcon = (fileName: string) => {
     const ext = fileName.split('.').pop()?.toLowerCase() || '';
     const iconMap: { [key: string]: string } = {
       'js': '🟨', 'ts': '🔷', 'jsx': '⚛️', 'tsx': '⚛️',
@@ -116,30 +115,80 @@ function TreeNode({
     return classes.join(' ');
   };
 
+  const FolderIcon = ({ open }: { open: boolean }) => (
+    <svg
+      className="folder-svg"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M3.5 6.75A1.75 1.75 0 0 1 5.25 5h4.27c.46 0 .9.18 1.22.5l1.36 1.36c.33.32.77.5 1.23.5h4.47A1.75 1.75 0 0 1 19.5 9.1l-.6 8.15A1.75 1.75 0 0 1 17.16 19H5.09a1.75 1.75 0 0 1-1.73-1.93z"
+        fill={open ? 'var(--primary-color)' : 'currentColor'}
+        fillOpacity={open ? 0.14 : 0.12}
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.5 9.5h17"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeOpacity="0.6"
+      />
+    </svg>
+  );
+
   return (
     <div className={getTreeNodeClasses()} style={{ marginLeft: `${depth * 20}px` }}>
       <div className="tree-node-header">
         {node.is_directory ? (
           <div className="directory-item">
-            <input
-              type="checkbox"
-              className="directory-checkbox"
-              checked={getDirectoryCheckboxState(node.path) === 'checked'}
-              ref={(input) => {
-                if (input) {
-                  input.indeterminate = getDirectoryCheckboxState(node.path) === 'indeterminate';
-                }
-              }}
-              onChange={() => onToggleDirectorySelection(node.path)}
-            />
             <button 
               className={getExpandButtonClasses()}
               onClick={() => onToggleDirectory(node.path)}
               disabled={!hasChildren}
+              aria-label={isExpanded ? 'Collapse folder' : 'Expand folder'}
             >
-              {hasChildren ? (isExpanded ? '▼' : '▶') : '·'}
+              {hasChildren && (
+                <svg
+                  className="chevron-icon"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M7 5l6 5-6 5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
             </button>
-            <span className="file-icon">{getFileIcon(node.name, true)}</span>
+            <label className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={directoryState === 'checked'}
+                ref={(input) => {
+                  if (input) {
+                    input.indeterminate = directoryState === 'indeterminate';
+                  }
+                }}
+                onChange={() => onToggleDirectorySelection(node.path)}
+              />
+              <span
+                className={`checkbox-box ${directoryState}`}
+                aria-hidden="true"
+              />
+            </label>
+            <span className="file-icon folder-icon">
+              <FolderIcon open={isExpanded} />
+            </span>
             <span className="file-name">{node.name}</span>
             <span className="source-count">
               {countSourceFiles(node)} source files
@@ -147,14 +196,21 @@ function TreeNode({
           </div>
         ) : (
           <label className="file-checkbox">
-            <input
-              type="checkbox"
-              checked={selectedFiles.has(node.path)}
-              onChange={() => onToggleFile(node.path)}
-              disabled={!node.is_source_file}
-            />
+            <span className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={selectedFiles.has(node.path)}
+                onChange={() => onToggleFile(node.path)}
+                disabled={!node.is_source_file}
+              />
+              <span
+                className={`checkbox-box ${selectedFiles.has(node.path) ? 'checked' : 'unchecked'}`}
+                aria-hidden="true"
+              />
+            </span>
             <span className={`file-info ${!node.is_source_file ? 'non-source' : ''}`}>
-              <span className="file-icon">{getFileIcon(node.name, false)}</span>
+              <span className="file-icon">{getFileIcon(node.name)}</span>
               <span className="file-name">{node.name}</span>
               {!node.is_source_file && <span className="non-source-label">(not a source file)</span>}
             </span>
