@@ -1,100 +1,71 @@
-# ⚡️🦀 PasteRust – Fast Context for Your LLM
+# PasteRust – Fast context for your LLM
 
-PasteRust is a small desktop app that copies files (and an optional prompt) into your clipboard so you can drop them straight into an LLM.
+PasteRust is a lightweight desktop app that copies selected files (plus an optional prompt) into your clipboard so you can paste structured context directly into an LLM. This is especially useful when you have a ChatGPT/Claude subscription and want to utilize its limits to improve your projects. Also great for use with Google AI Studio.
 
-> Benchmarked: re‑indexed the entire TensorFlow monorepo (\~1.6 GB) in **6.7 seconds** on an entry‑level i3‑10105F.
+> Benchmark: re‑indexed the TensorFlow monorepo (~1.6 GB) in **6.7 seconds** on an entry‑level i3‑10105F.
 
----
+## Background
 
-## Why I built this
+[pastemax](https://github.com/kleneway/pastemax) solved the workflow but Electron startup time did not. My version keeps the workflow while delivering a small footprint, native speed, and minimal startup delay.
 
-I used [**kleneway/pastemax**](https://github.com/kleneway/pastemax) for months, but Electron felt too heavy. It took two minutes just to load a codebase. So I rewrote it in Rust + Tauri. The result: a fraction of the size, native speed, and no waiting around.
+## Features
 
----
+- Fast startup: point at a repository and start working in seconds.
+- Automatic file detection: files are picked up without manual curation.
+- Selective copy: choose only the files you need.
+- Optional prompt: add contextual instructions alongside the files.
+- XML output: structured and easily readable for LLMs.
+- Native UI: built with Tauri (React and Rust).
 
-## 🔥 Features
+## Workflow
 
-| What you get                            | Why it matters                                 |
-| --------------------------------------- | ---------------------------------------------- |
-| **Fast startup** – seconds, not minutes | Spend time coding, not waiting                 |
-| **Folder-first workflow**               | Point it at a repo, and it just works          |
-| **Smart file detection**                | Picks up code, configs, and docs automatically |
-| **Checkbox selection**                  | Include everything or just the files you need  |
-| **Custom prompts**                      | Add context instructions directly              |
-| **Clean XML output**                    | Ready to feed into RAG, embeddings, or agents  |
-| **Native dark UI**                      | Built with Tauri/React – ~30 MB install size  |
+1. Select a folder.
+2. Review detected files.
+3. Select the files to include.
+4. (Optional) Add a custom prompt.
+5. Copy the generated XML.
 
----
-
-## 📦 Supported File Types
-
-* **Languages**: Rust, Python, JS/TS, C/C++, C#, Java, Go, Swift, Kotlin, ...
-* **Web**: HTML, CSS, SCSS, Vue, Svelte, JSX/TSX
-* **Config & Docs**: JSON, YAML, TOML, Dockerfile, Makefile, Markdown, LaTeX
-
-*(If your editor supports it, chances are PasteRust does too.)*
-
----
-
-## 🛠️ Workflow
-
-1. Select a folder
-2. Review the detected files
-3. Check the ones you want
-4. (Optional) Add a custom prompt
-5. Copy XML — done
-
+Current prompt structure:
 ```xml
 <source_code_context>
   <user_prompt>Refactor for async/await best practices.</user_prompt>
   <files>
     <file path="src/lib.rs" name="lib.rs">
-      // snip
+      <!-- content -->
     </file>
   </files>
 </source_code_context>
 ```
 
----
+## Stack
 
-## ✨ Tech Stack
+- Frontend: React, TypeScript, Vite.
+- Runtime: Rust.
+- Host: Tauri.
+- File system crawl: ignore crate (parallel traversal).
+- Clipboard: Tauri plugin (cross‑platform).
 
-| Layer         | Choice                    | Why                                       |
-| ------------- | ------------------------- | ----------------------------------------- |
-| **Frontend**  | React + TypeScript + Vite | Fast dev cycle, hot reload                |
-| **Runtime**   | Rust                      | Memory safety + C‑like speed              |
-| **Host**      | Tauri                     | Native WebView, way lighter than Electron |
-| **FS crawl**  | `walkdir` crate           | Efficient, parallel file traversal        |
-| **Clipboard** | Tauri plugin              | Works across platforms                    |
+## Build from source
 
----
-
-## Quickstart
+Requirements: Node, Rust stable.
 
 ```bash
-# Requirements: Node 16+, Rust stable, Tauri CLI
 git clone https://github.com/sqdshguy/pasterust
 cd pasterust
 npm install
 npm run tauri dev
 ```
 
-### Production Build
+Release build (much more optimized):
 
 ```bash
-npm run tauri build  # Creates native installers for your OS
+npm run tauri build
 ```
 
----
+## Contributing
 
-## 🤝 Contributing
+Pull requests are welcome. Include benchmarks when proposing performance changes so impact is measurable.
 
-Pull requests welcome. If you’re adding optimizations, please include benchmarks so the impact is clear. Feature ideas that make life easier for engineers are especially encouraged.
+## License
 
-## 📄 License
-
-MIT License
-
----
-
-*PasteRust: less bloat, more speed.*
+MIT
