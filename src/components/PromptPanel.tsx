@@ -1,5 +1,5 @@
 import SelectedFilesList from "./SelectedFilesList";
-import { SelectedFileInfo } from "../types";
+import type { SelectedFileInfo } from "../types";
 
 interface PromptPanelProps {
   selectedFiles: Set<string>;
@@ -30,6 +30,11 @@ function PromptPanel({
   onCopyToClipboard,
   onIncludeFileStructureChange,
 }: PromptPanelProps) {
+  const statusType =
+    message.toLowerCase().includes("error") || message.toLowerCase().includes("fail")
+      ? "error"
+      : "success";
+
   return (
     <div className="prompt-panel">
       <div className="panel-header">
@@ -88,6 +93,8 @@ function PromptPanel({
           {isLoading ? "Processing..." : "Copy"}
         </button>
       </div>
+
+      {message && <div className={`status-message ${statusType}`}>{message}</div>}
     </div>
   );
 }
