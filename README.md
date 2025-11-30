@@ -2,8 +2,6 @@
 
 PasteRust is a lightweight desktop app that copies selected files (plus an optional prompt) into your clipboard so you can paste structured context directly into an LLM. This is especially useful when you have a ChatGPT/Claude subscription and want to utilize its limits to improve your projects. Also great for use with Google AI Studio.
 
-> Benchmark: re‑indexed the TensorFlow monorepo (~1.6 GB) in **6.7 seconds** on an entry‑level i3‑10105F.
-
 ## Background
 
 RepoPrompt didn't support Linux/Windows when this project was created, so I needed an alternative for personal use. But alternatives were not really good. For instance, [PasteMax](https://github.com/kleneway/pastemax) solved the workflow partially but Electron sluggishness did not satisfy me. My version keeps the workflow in tact while delivering a small footprint, native speed, and minimal startup delay.
