@@ -19,8 +19,6 @@
       "description": "Never automerge major updates (Runtime or Dev)",
       "matchUpdateTypes": ["major"],
       "automerge": false,
-      "//": "Force a Dashboard entry for major updates so they are seen",
-      "dependencyDashboardApproval": true
     },
     {
       "description": "Runtime Patch updates: Automerge after soak.",
