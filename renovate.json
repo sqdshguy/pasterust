@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":disableDependencyDashboard"],
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Group all non-major devDependency updates to reduce noise",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dev dependencies",
+      "automerge": true,
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Never automerge major updates (Runtime or Dev)",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "//": "Force a Dashboard entry for major updates so they are seen",
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Runtime Patch updates: Automerge after soak.",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch"],
+      "minimumReleaseAge": "3 days",
+      "automerge": true
+    },
+    {
+      "description": "Runtime Minor updates: Manual merge only.",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "7 days",
+      "automerge": false
+    }
+  ]
+}
