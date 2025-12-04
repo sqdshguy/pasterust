@@ -18,7 +18,7 @@
     {
       "description": "Never automerge major updates (Runtime or Dev)",
       "matchUpdateTypes": ["major"],
-      "automerge": false,
+      "automerge": false
     },
     {
       "description": "Runtime Patch updates: Automerge after soak.",
