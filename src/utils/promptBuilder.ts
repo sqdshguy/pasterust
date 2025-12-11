@@ -18,11 +18,16 @@ export const buildPromptPayload = ({
   prompt,
   filesWithContent,
 }: PromptPayloadOptions): string => {
+  const trimmedPrompt = prompt.trim();
   const sortedFiles = filesWithContent
     .filter((file) => selectedFiles.has(file.path))
     .sort((a, b) => a.path.localeCompare(b.path));
 
   let xmlOutput = "";
+
+  if (trimmedPrompt) {
+    xmlOutput += `<user_instructions>\n${trimmedPrompt}\n</user_instructions>\n\n`;
+  }
 
   if (includeFileStructure && fileTree.length > 0) {
     xmlOutput += `<file_map>\n`;
@@ -43,10 +48,6 @@ export const buildPromptPayload = ({
   }
 
   xmlOutput += `</file_contents>`;
-
-  if (prompt.trim()) {
-    xmlOutput += `\n<user_instructions>\n${prompt.trim()}\n</user_instructions>`;
-  }
 
   return xmlOutput;
 };
