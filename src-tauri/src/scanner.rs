@@ -1,4 +1,4 @@
-use ignore::WalkBuilder;
+use ignore::{DirEntry, WalkBuilder};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -21,6 +21,8 @@ pub struct FileNode {
 pub struct DirectoryScanner {
     config: AppConfig,
 }
+
+const IGNORED_DIRECTORIES: [&str; 5] = ["node_modules", ".git", ".hg", ".svn", "target"];
 
 impl DirectoryScanner {
     pub fn new(config: AppConfig) -> Self {
@@ -56,7 +58,10 @@ impl DirectoryScanner {
         let mut all_entries = Vec::new();
 
         let mut builder = WalkBuilder::new(path);
-        builder.max_depth(Some(self.config.max_depth)).hidden(false);
+        builder
+            .max_depth(Some(self.config.max_depth))
+            .hidden(false)
+            .filter_entry(|entry| !should_ignore_entry(entry));
 
         let walker = builder.build();
 
@@ -192,4 +197,23 @@ struct EntryInfo {
     path: PathBuf,
     is_directory: bool,
     is_source_file: bool,
+}
+
+fn should_ignore_entry(entry: &DirEntry) -> bool {
+    if entry.depth() == 0 {
+        return false;
+    }
+
+    let Some(file_type) = entry.file_type() else {
+        return false;
+    };
+
+    let Some(name) = entry.file_name().to_str() else {
+        return false;
+    };
+
+    file_type.is_dir()
+        && IGNORED_DIRECTORIES
+            .iter()
+            .any(|ignored| name.eq_ignore_ascii_case(ignored))
 }
