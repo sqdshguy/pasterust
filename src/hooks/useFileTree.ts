@@ -38,7 +38,7 @@ export const useFileTree = (): FileTreeHookResult => {
   const refreshDirectory = useCallback(async () => {
     if (!selectedFolder) {
       setMessage("No folder selected to refresh");
-      return;
+      return false;
     }
 
     try {
@@ -54,9 +54,11 @@ export const useFileTree = (): FileTreeHookResult => {
 
       setFileTree(tree);
       setMessage("");
+      return true;
     } catch (error) {
       setMessage(`Error refreshing: ${error}`);
       setScanTime(null);
+      return false;
     } finally {
       setIsLoading(false);
     }

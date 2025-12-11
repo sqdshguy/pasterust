@@ -2,8 +2,8 @@ interface TitleBarProps {
   selectedFolder: string;
   scanTime: number | null;
   isLoading: boolean;
-  onSelectFolder: () => void;
-  onRefreshDirectory: () => void;
+  onSelectFolder: () => void | Promise<void>;
+  onRefreshDirectory: () => void | Promise<void>;
 }
 
 const FolderIcon = ({ open = false, className }: { open?: boolean; className?: string }) => (

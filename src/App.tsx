@@ -39,6 +39,7 @@ function App() {
     expandAllDirectories,
     collapseAllDirectories,
     getSelectedFilesInfo,
+    resetSelection,
   } = useFileSelection(fileTree);
 
   const defaultTaskType = TASK_TYPES.find((task) => task.id === "standard");
@@ -52,6 +53,14 @@ function App() {
   const [selectedFileContents, setSelectedFileContents] = useState<SelectedFile[]>([]);
   const [promptTokenCount, setPromptTokenCount] = useState<number>(0);
   const [isCountingTokens, setIsCountingTokens] = useState<boolean>(false);
+
+  const handleRefreshDirectory = useCallback(async () => {
+    const refreshed = await refreshDirectory();
+    if (refreshed) {
+      setSelectedFileContents([]);
+      setPromptTokenCount(0);
+    }
+  }, [refreshDirectory]);
 
   const createSelectedFile = useCallback((filePath: string, content: string): SelectedFile => {
     const fileName = filePath.split(/[/\\]/).pop() || filePath;
@@ -90,6 +99,12 @@ function App() {
       return filtered.length === prev.length ? prev : filtered;
     });
   }, [selectedFiles]);
+
+  // When switching folders, clear any previous selections and cached contents
+  useEffect(() => {
+    resetSelection();
+    setSelectedFileContents([]);
+  }, [resetSelection, selectedFolder]);
 
   // Get filtered file tree
   const filteredFileTree = useCallback(() => {
@@ -281,7 +296,7 @@ function App() {
         scanTime={scanTime}
         isLoading={isLoading}
         onSelectFolder={selectFolder}
-        onRefreshDirectory={refreshDirectory}
+        onRefreshDirectory={handleRefreshDirectory}
       />
 
       <div className="app-layout">
