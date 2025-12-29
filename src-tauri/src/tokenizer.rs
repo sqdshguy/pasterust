@@ -5,12 +5,12 @@ use crate::error::{AppError, AppResult};
 
 static BPE_TOKENIZER: Lazy<Option<CoreBPE>> = Lazy::new(|| match o200k_base() {
     Ok(bpe) => {
-        println!("✅ BPE tokenizer initialized successfully");
+        // println!("✅ BPE tokenizer initialized successfully");
         Some(bpe)
     }
     Err(e) => {
         eprintln!(
-            "❌ Error initializing BPE tokenizer: {:?}. Token counting will be disabled.",
+            "Error initializing BPE tokenizer: {:?}. Token counting will be disabled.",
             e
         );
         None

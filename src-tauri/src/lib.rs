@@ -93,6 +93,11 @@ async fn copy_to_clipboard(app: tauri::AppHandle, content: String) -> Result<(),
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Pre-warm the BPE tokenizer in background to avoid cold-start delay on first token count
+    std::thread::spawn(|| {
+        let _ = tokenizer::get_bpe_tokenizer();
+    });
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
