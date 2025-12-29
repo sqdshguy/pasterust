@@ -8,6 +8,22 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [react()],
 
+  // Build optimizations for Tauri
+  build: {
+    // Target modern WebView engines for smaller, faster output
+    target: "esnext",
+    // Reduce chunk size warnings threshold
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        // Optimize chunking for faster initial load
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+        },
+      },
+    },
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors

@@ -8,6 +8,20 @@
     <title>PasteRust - Source Code Context Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Critical inline styles to prevent flash of white during load -->
+    <style>
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        html, body, #root {
+          background-color: #000000;
+        }
+      }
+    </style>
   </head>
 
   <body>
