@@ -101,6 +101,7 @@ function App() {
   }, [selectedFiles]);
 
   // When switching folders, clear any previous selections and cached contents
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selectedFolder is intentionally a dependency to trigger reset on folder change
   useEffect(() => {
     resetSelection();
     setSelectedFileContents([]);
