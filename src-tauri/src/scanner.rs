@@ -90,9 +90,6 @@ impl DirectoryScanner {
 
             let is_source = !is_dir && !is_binary;
 
-            if is_source && !is_dir && metadata.len() <= self.config.max_file_size {
-            }
-
             all_entries.push(EntryInfo {
                 name: entry.file_name().to_string_lossy().into_owned(),
                 path: entry_path.to_path_buf(),
@@ -176,7 +173,7 @@ impl DirectoryScanner {
             .collect()
     }
 
-    fn sort_tree(&self, nodes: &mut Vec<FileNode>) {
+    fn sort_tree(&self, nodes: &mut [FileNode]) {
         nodes.sort_unstable_by(|a, b| match (a.is_directory, b.is_directory) {
             (true, false) => std::cmp::Ordering::Less,
             (false, true) => std::cmp::Ordering::Greater,
