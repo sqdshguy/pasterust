@@ -2,36 +2,21 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", ":disableDependencyDashboard"],
   "labels": ["dependencies"],
+  "schedule": ["before 9am on monday"],
   "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
+    "enabled": true
   },
   "packageRules": [
     {
-      "description": "Group all non-major devDependency updates to reduce noise",
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major dev dependencies",
+      "description": "Group all non-major updates into a single weekly PR",
+      "matchUpdateTypes": ["minor", "patch", "digest", "lockFileMaintenance"],
+      "groupName": "all non-major updates",
       "automerge": true,
       "minimumReleaseAge": "3 days"
     },
     {
-      "description": "Never automerge major updates (Runtime or Dev)",
+      "description": "Never automerge major updates",
       "matchUpdateTypes": ["major"],
-      "automerge": false
-    },
-    {
-      "description": "Runtime Patch updates: Automerge after soak.",
-      "matchDepTypes": ["dependencies"],
-      "matchUpdateTypes": ["patch"],
-      "minimumReleaseAge": "3 days",
-      "automerge": true
-    },
-    {
-      "description": "Runtime Minor updates: Manual merge only.",
-      "matchDepTypes": ["dependencies"],
-      "matchUpdateTypes": ["minor"],
-      "minimumReleaseAge": "7 days",
       "automerge": false
     }
   ]
